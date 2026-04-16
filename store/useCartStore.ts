@@ -14,7 +14,6 @@ interface CartState {
   discount: number;
   paymentMethod: 'cash' | 'upi';
   amountReceived: number;
-  changeReturned: number;
   setCustomerName: (name: string) => void;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
@@ -24,7 +23,6 @@ interface CartState {
   setDiscount: (discount: number) => void;
   setPaymentMethod: (method: 'cash' | 'upi') => void;
   setAmountReceived: (amount: number) => void;
-  setChangeReturned: (change: number) => void;
   resetCart: () => void;
   getSubtotal: () => number;
   getGrandTotal: () => number;
@@ -37,7 +35,6 @@ export const useCartStore = create<CartState>((set, get) => ({
   discount: 0,
   paymentMethod: 'upi',
   amountReceived: 0,
-  changeReturned: 0,
   setCustomerName: (name) => set({ customerName: name }),
   addItem: (newItem) => {
     const existing = get().items.find((i) => i.id === newItem.id);
@@ -72,22 +69,16 @@ export const useCartStore = create<CartState>((set, get) => ({
   setDiscount: (discount) => set({ discount }),
   setPaymentMethod: (method) => set({ 
     paymentMethod: method,
-    amountReceived: 0,
-    changeReturned: 0
+    amountReceived: 0
   }),
-  setAmountReceived: (amount) => set((state) => ({ 
-    amountReceived: amount,
-    changeReturned: Math.max(0, amount - state.getGrandTotal())
-  })),
-  setChangeReturned: (change) => set({ changeReturned: change }),
+  setAmountReceived: (amount) => set({ amountReceived: amount }),
   resetCart: () => set({ 
     customerName: '', 
     items: [], 
     deliveryCharge: 0, 
     discount: 0,
     paymentMethod: 'upi',
-    amountReceived: 0,
-    changeReturned: 0
+    amountReceived: 0
   }),
   getSubtotal: () => {
     return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);

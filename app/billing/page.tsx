@@ -43,9 +43,10 @@ export default function BillingPage() {
     setPaymentMethod,
     amountReceived,
     setAmountReceived,
-    changeReturned,
     resetCart
   } = useCartStore();
+
+  const changeToReturn = Math.max(0, (amountReceived || 0) - getGrandTotal());
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null); // This will now store category ID
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -97,7 +98,7 @@ export default function BillingPage() {
       discount: discount || 0,
       paymentMethod,
       amountReceived: paymentMethod === 'cash' ? amountReceived : 0,
-      changeReturned: paymentMethod === 'cash' ? changeReturned : 0,
+      changeReturned: paymentMethod === 'cash' ? changeToReturn : 0,
       grandTotal: getGrandTotal(),
       status: 'paid'
     };
@@ -314,7 +315,7 @@ export default function BillingPage() {
                     </div>
                     <div className="flex justify-between items-center px-1">
                       <span className="text-[9px] font-black text-slate-400 uppercase">Change to Return</span>
-                      <span className="text-lg font-black text-teal-600">₹{changeReturned}</span>
+                      <span className="text-lg font-black text-teal-600">₹{changeToReturn}</span>
                     </div>
                   </div>
                 )}
@@ -537,7 +538,7 @@ export default function BillingPage() {
                     </div>
                     <div className="flex justify-between items-center border-t border-slate-100 pt-2">
                       <span className="text-[8px] font-black text-slate-400 uppercase">Change to Return</span>
-                      <span className="text-sm font-black text-teal-600">₹{changeReturned}</span>
+                      <span className="text-sm font-black text-teal-600">₹{changeToReturn}</span>
                     </div>
                   </div>
                 )}
