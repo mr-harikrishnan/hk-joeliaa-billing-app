@@ -42,6 +42,7 @@ export default function BillingPage() {
   const [isQtySheetOpen, setIsQtySheetOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCartMobileOpen, setIsCartMobileOpen] = useState(false);
 
   useEffect(() => {
     fetchMenu();
@@ -105,7 +106,7 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 pb-32 lg:pb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center">
@@ -202,8 +203,8 @@ export default function BillingPage() {
           )}
         </div>
 
-        {/* Right Column: Checkout Sidebar (1/3 width on desktop) */}
-        <div className="space-y-6">
+        {/* Right Column: Checkout Sidebar (Hidden on mobile, FAB shows it) */}
+        <div className="hidden lg:block space-y-6">
           <div className="bg-white rounded-[40px] shadow-sm border border-slate-100 p-8 sticky top-6 flex flex-col min-h-[500px]">
             <div className="flex items-center space-x-3 mb-8">
               <div className="p-3 bg-teal-50 text-teal-600 rounded-2xl">
@@ -318,6 +319,113 @@ export default function BillingPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Floating Action Button */}
+      {cartItems.length > 0 && (
+        <div className="lg:hidden fixed bottom-24 left-6 right-6 z-40">
+          <button 
+            onClick={() => setIsCartMobileOpen(true)}
+            className="w-full bg-slate-900 text-white rounded-[28px] p-1.5 shadow-2xl flex items-center justify-between group active:scale-[0.98] transition-all"
+          >
+            <div className="flex items-center space-x-3 ml-4">
+              <div className="w-10 h-10 bg-teal-500 rounded-2xl flex items-center justify-center text-white font-black">
+                {cartItems.reduce((sum, i) => sum + i.quantity, 0)}
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-none mb-1">Items in Cart</p>
+                <p className="font-black text-lg leading-none">View Order</p>
+              </div>
+            </div>
+            <div className="bg-teal-600 px-6 py-3.5 rounded-[22px] flex items-center space-x-2">
+              <span className="font-black text-lg">₹{getGrandTotal()}</span>
+              <ChevronRight size={20} />
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Cart Review Overlay */}
+      <BottomSheet 
+        isOpen={isCartMobileOpen} 
+        onClose={() => setIsCartMobileOpen(false)}
+        title="Review Order"
+      >
+        <div className="flex flex-col min-h-[60vh] pb-8">
+          {/* Customer Details in Sheet */}
+          <div className="space-y-4 mb-8">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Customer Name</label>
+              <div className="relative">
+                <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Enter customer name"
+                  className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-teal-100 font-bold"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery Charge</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
+                <input 
+                  type="number" 
+                  placeholder="0"
+                  className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-10 pr-4 text-sm font-black focus:ring-2 focus:ring-teal-100"
+                  value={deliveryCharge || ''}
+                  onChange={(e) => setDeliveryCharge(Number(e.target.value))}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Cart Items List in Sheet */}
+          <div className="flex-1 space-y-4 mb-8">
+            {cartItems.map((item) => (
+              <div key={item.id} className="flex flex-col p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="font-bold text-slate-800 text-sm">{item.name}</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">₹{item.price} per unit</p>
+                  </div>
+                  <button onClick={() => removeItem(item.id)} className="p-1.5 text-slate-300 hover:text-red-500">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100/50">
+                  <div className="flex items-center bg-white rounded-xl border border-slate-100 p-1">
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 text-slate-400"><Minus size={14} /></button>
+                    <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
+                    <button onClick={() => addItem({ id: item.id, name: item.name, price: item.price })} className="p-1.5 text-slate-400"><Plus size={14} /></button>
+                  </div>
+                  <span className="text-sm font-black text-teal-600">₹{item.price * item.quantity}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-6 border-t border-slate-100 space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-lg font-black text-slate-800 tracking-tight">Total Amount</span>
+              <span className="text-3xl font-black text-teal-600 tracking-tighter">₹{getGrandTotal()}</span>
+            </div>
+            <button 
+              disabled={isGenerating || cartItems.length === 0}
+              onClick={handleGenerateBill}
+              className="w-full py-5 bg-teal-600 text-white rounded-[24px] font-black shadow-xl shadow-teal-100 flex items-center justify-center space-x-3 active:scale-[0.98] transition-all"
+            >
+              {isGenerating ? <Loader2 className="animate-spin" size={24} /> : (
+                <>
+                  <span>Generate Invoice</span>
+                  <ChevronRight size={20} />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </BottomSheet>
 
       {/* Quantity Bottom Sheet (Mobile & Quick Set) */}
       <BottomSheet 
