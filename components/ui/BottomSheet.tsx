@@ -21,6 +21,10 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Bottom
     } else {
       document.body.style.overflow = 'unset';
     }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   if (!mounted) return null;
