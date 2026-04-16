@@ -155,15 +155,15 @@ export default function MenuPage() {
     <div className="space-y-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Menu Library</h1>
-          <p className="text-slate-500 font-medium">Manage your items and categories</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Menu</h1>
+          <p className="text-xs sm:text-slate-500 font-medium text-slate-400">Manage items</p>
         </div>
         <button 
           onClick={handleOpenAdd}
-          className="bg-teal-600 text-white flex items-center justify-center space-x-2 px-6 py-4 rounded-[24px] shadow-lg shadow-teal-100 hover:bg-teal-700 active:scale-95 transition-all text-sm font-black"
+          className="bg-teal-600 text-white flex items-center justify-center space-x-2 px-6 py-3.5 sm:py-4 rounded-[20px] sm:rounded-[24px] shadow-lg shadow-teal-100 hover:bg-teal-700 active:scale-95 transition-all text-xs sm:text-sm font-black"
         >
-          <Plus size={20} />
-          <span>New Product</span>
+          <Plus size={18} className="sm:w-5 sm:h-5" />
+          <span>New</span>
         </button>
       </div>
 
@@ -206,7 +206,7 @@ export default function MenuPage() {
               key={cat._id}
               onClick={() => setActiveCategory(cat._id)}
               className={`
-                whitespace-nowrap px-8 py-3.5 rounded-2xl text-sm font-bold transition-all border
+                whitespace-nowrap px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-bold transition-all border
                 ${activeCategory === cat._id 
                   ? 'bg-teal-600 text-white border-teal-600 shadow-md translate-y-[-2px]' 
                   : 'bg-white text-slate-500 border-slate-100 hover:border-teal-200'}
@@ -225,27 +225,27 @@ export default function MenuPage() {
         </div>
       ) : (
         <div className={viewMode === 'grid' 
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
           : "grid grid-cols-1 gap-4"
         }>
           {filteredItems.map((item) => (
             <div 
               key={item._id} 
               className={`
-                bg-white rounded-[32px] shadow-sm border border-slate-100 transition-all hover:shadow-md group relative
-                ${viewMode === 'grid' ? 'p-6 flex flex-col' : 'p-4 flex items-center justify-between'}
+                bg-white rounded-[24px] sm:rounded-[32px] shadow-sm border border-slate-100 transition-all hover:shadow-md group relative
+                ${viewMode === 'grid' ? 'p-3 sm:p-6 flex flex-col' : 'p-4 flex items-center justify-between'}
               `}
             >
-              <div className={`flex items-center ${viewMode === 'grid' ? 'space-x-0 flex-col text-center mb-6' : 'space-x-4'}`}>
+              <div className={`flex items-center ${viewMode === 'grid' ? 'space-x-0 flex-col text-center mb-3 sm:mb-6' : 'space-x-4'}`}>
                 <div className={`
-                  ${viewMode === 'grid' ? 'w-24 h-24 mb-4' : 'w-14 h-14'}
-                  bg-teal-50 rounded-[24px] flex items-center justify-center text-teal-600
+                  ${viewMode === 'grid' ? 'w-16 h-16 sm:w-24 sm:h-24 mb-3 sm:mb-4' : 'w-12 h-12'}
+                  bg-teal-50 rounded-[18px] sm:rounded-[24px] flex items-center justify-center text-teal-600
                 `}>
-                  <PackageCheck size={viewMode === 'grid' ? 40 : 28} />
+                  <PackageCheck size={viewMode === 'grid' ? 24 : 20} className="sm:w-10 sm:h-10" />
                 </div>
                 <div className="flex-1 w-full min-w-0">
-                  <h3 className="font-bold text-slate-800 line-clamp-2 break-words leading-tight mb-1">{item.name}</h3>
-                  <p className="text-teal-600 font-black text-lg">₹{item.price}</p>
+                  <h3 className="font-bold text-slate-800 text-[11px] sm:text-sm line-clamp-2 break-words leading-tight mb-0.5 sm:mb-1">{item.name}</h3>
+                  <p className="text-teal-600 font-black text-base sm:text-lg">₹{item.price}</p>
                 </div>
               </div>
 
@@ -255,16 +255,16 @@ export default function MenuPage() {
               `}>
                 <button 
                   onClick={() => handleOpenEdit(item)}
-                  className="flex-1 flex items-center justify-center space-x-2 py-2.5 px-4 text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-xs font-bold"
+                  className="flex-1 flex items-center justify-center space-x-1 sm:space-x-2 py-2 sm:py-2.5 px-2 sm:px-4 text-blue-600 bg-blue-50 rounded-lg sm:rounded-xl hover:bg-blue-100 transition-colors text-[10px] sm:text-xs font-bold"
                 >
-                  <Edit3 size={14} />
+                  <Edit3 size={12} className="sm:w-3.5 sm:h-3.5" />
                   <span>Edit</span>
                 </button>
                 <button 
                   onClick={() => handleDelete(item._id)}
-                  className="p-2.5 text-red-500 bg-red-50 rounded-xl hover:bg-red-100 transition-colors"
+                  className="p-2 sm:p-2.5 text-red-500 bg-red-50 rounded-lg sm:rounded-xl hover:bg-red-100 transition-colors"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={12} className="sm:w-3.5 sm:h-3.5" />
                 </button>
               </div>
             </div>

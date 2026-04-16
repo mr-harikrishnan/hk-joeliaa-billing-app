@@ -74,11 +74,11 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between space-y-4 md:space-y-0">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
             Business Overview
           </h1>
-          <p className="text-slate-500 font-medium">
-            Monitoring your homemade treats business performance
+          <p className="text-xs sm:text-slate-500 font-medium text-slate-400">
+            Monitoring your performance
           </p>
         </div>
         <div className="flex items-center space-x-4 bg-white p-2 pr-6 rounded-2xl shadow-sm border border-slate-100">
@@ -104,32 +104,32 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {cards.map((card) => (
           <div
             key={card.title}
-            className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between group hover:shadow-md transition-all duration-300"
+            className="bg-white p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between group hover:shadow-md transition-all duration-300"
           >
             <div
-              className={`w-12 h-12 rounded-2xl ${card.color} flex items-center justify-center mb-6`}
+              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${card.color} flex items-center justify-center mb-4 sm:mb-6`}
             >
-              <card.icon size={24} />
+              <card.icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+              <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                 {card.title}
               </p>
-              <h3 className="text-3xl font-black text-slate-900 tracking-tight">
+              <h3 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">
                 {card.value}
               </h3>
             </div>
-            <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-50 flex items-center justify-between">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">
                 {card.sub}
               </span>
               <ChevronRight
-                className="text-slate-300 group-hover:text-teal-500 transition-colors"
-                size={16}
+                className="text-slate-300 group-hover:text-teal-500 transition-colors shrink-0"
+                size={14}
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function Dashboard() {
       {/* Main Analytics Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Large Chart */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-[40px] shadow-sm border border-slate-100">
+        <div className="lg:col-span-2 bg-white p-5 sm:p-8 rounded-[32px] sm:rounded-[40px] shadow-sm border border-slate-100">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-slate-800 tracking-tight">
               Revenue Trends
@@ -214,13 +214,13 @@ export default function Dashboard() {
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
               <IndianRupee className="text-white" size={28} />
             </div>
-            <h3 className="text-white font-black text-2xl leading-tight">
+            <h3 className="text-white font-black text-xl sm:text-2xl leading-tight">
               Generate
               <br />
               Instant Bill
             </h3>
-            <p className="text-teal-100 text-sm mt-3 font-medium opacity-80">
-              Quick checkout for your customers
+            <p className="text-teal-100 text-xs sm:text-sm mt-2 sm:mt-3 font-medium opacity-80">
+              Quick checkout
             </p>
           </div>
           <button

@@ -109,11 +109,11 @@ export default function BillingPage() {
     <div className="max-w-7xl mx-auto space-y-8 pb-32 lg:pb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center">
-            <Receipt className="text-teal-600 mr-3" size={32} />
-            Create New Bill
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center">
+            <Receipt className="text-teal-600 mr-2 sm:mr-3 w-6 h-6 sm:w-8 sm:h-8" />
+            Create Bill
           </h1>
-          <p className="text-slate-500 font-medium">Select items and generate customer invoice</p>
+          <p className="text-[11px] sm:text-slate-500 font-medium text-slate-400">Select items for invoice</p>
         </div>
         <div className="flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-2xl border border-teal-100">
           <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
@@ -163,7 +163,7 @@ export default function BillingPage() {
               <Loader2 className="animate-spin text-teal-600" size={32} />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
               {filteredItems.map((item) => {
                 const inCart = cartItems.find(i => i.id === item._id);
                 return (
@@ -171,7 +171,7 @@ export default function BillingPage() {
                     key={item._id}
                     onClick={() => handleItemTap(item)}
                     className={`
-                      relative group bg-white p-6 rounded-[32px] shadow-sm border transition-all active:scale-95 text-left
+                      relative group bg-white p-3 sm:p-6 rounded-[24px] sm:rounded-[32px] shadow-sm border transition-all active:scale-95 text-left
                       ${inCart 
                         ? 'border-teal-500 ring-4 ring-teal-50 shadow-md' 
                         : 'border-slate-100 hover:border-teal-200 hover:shadow-md'}
@@ -182,13 +182,13 @@ export default function BillingPage() {
                         <CheckCircle2 size={14} fill="white" className="text-teal-500" />
                       </div>
                     )}
-                    <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 mb-4 group-hover:scale-110 transition-transform">
-                      <Package size={24} />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-teal-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-teal-600 mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                      <Package className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-800 text-sm leading-tight mb-1 truncate">{item.name}</h4>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-teal-600 font-black text-lg">₹{item.price}</span>
+                      <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm leading-tight mb-1 truncate">{item.name}</h4>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-1 sm:mt-2">
+                        <span className="text-teal-600 font-black text-base sm:text-lg">₹{item.price}</span>
                         {inCart && (
                           <span className="bg-teal-100 text-teal-700 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider">
                             qty: {inCart.quantity}
@@ -352,28 +352,28 @@ export default function BillingPage() {
       >
         <div className="flex flex-col min-h-[60vh] pb-8">
           {/* Customer Details in Sheet */}
-          <div className="space-y-4 mb-8">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Customer Name</label>
+          <div className="space-y-3 mb-6">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Customer Name</label>
               <div className="relative">
-                <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
                 <input 
                   type="text" 
-                  placeholder="Enter customer name"
-                  className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-teal-100 font-bold"
+                  placeholder="Enter name"
+                  className="w-full bg-slate-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs focus:ring-2 focus:ring-teal-100 font-bold"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                 />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery Charge</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">₹</span>
                 <input 
                   type="number" 
                   placeholder="0"
-                  className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-10 pr-4 text-sm font-black focus:ring-2 focus:ring-teal-100"
+                  className="w-full bg-slate-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs font-black focus:ring-2 focus:ring-teal-100"
                   value={deliveryCharge || ''}
                   onChange={(e) => setDeliveryCharge(Number(e.target.value))}
                 />
@@ -382,44 +382,44 @@ export default function BillingPage() {
           </div>
 
           {/* Cart Items List in Sheet */}
-          <div className="flex-1 space-y-4 mb-8">
+          <div className="flex-1 space-y-3 mb-6">
             {cartItems.map((item) => (
-              <div key={item.id} className="flex flex-col p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+              <div key={item.id} className="flex flex-col p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-bold text-slate-800 text-sm">{item.name}</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">₹{item.price} per unit</p>
+                    <p className="font-bold text-slate-800 text-[11px]">{item.name}</p>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">₹{item.price}/unit</p>
                   </div>
-                  <button onClick={() => removeItem(item.id)} className="p-1.5 text-slate-300 hover:text-red-500">
-                    <Trash2 size={16} />
+                  <button onClick={() => removeItem(item.id)} className="p-1 text-slate-300 hover:text-red-500">
+                    <Trash2 size={14} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-slate-100/50">
-                  <div className="flex items-center bg-white rounded-xl border border-slate-100 p-1">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 text-slate-400"><Minus size={14} /></button>
-                    <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
-                    <button onClick={() => addItem({ id: item.id, name: item.name, price: item.price })} className="p-1.5 text-slate-400"><Plus size={14} /></button>
+                <div className="flex items-center justify-between pt-1.5 border-t border-slate-100/50">
+                  <div className="flex items-center bg-white rounded-lg border border-slate-100 p-0.5">
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 text-slate-400"><Minus size={12} /></button>
+                    <span className="w-6 text-center text-[10px] font-black">{item.quantity}</span>
+                    <button onClick={() => addItem({ id: item.id, name: item.name, price: item.price })} className="p-1 text-slate-400"><Plus size={12} /></button>
                   </div>
-                  <span className="text-sm font-black text-teal-600">₹{item.price * item.quantity}</span>
+                  <span className="text-xs font-black text-teal-600">₹{item.price * item.quantity}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="pt-6 border-t border-slate-100 space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-black text-slate-800 tracking-tight">Total Amount</span>
-              <span className="text-3xl font-black text-teal-600 tracking-tighter">₹{getGrandTotal()}</span>
+          <div className="pt-4 border-t border-slate-100 space-y-3">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-base font-black text-slate-800 tracking-tight">Total Amount</span>
+              <span className="text-2xl font-black text-teal-600 tracking-tighter">₹{getGrandTotal()}</span>
             </div>
             <button 
               disabled={isGenerating || cartItems.length === 0}
               onClick={handleGenerateBill}
-              className="w-full py-5 bg-teal-600 text-white rounded-[24px] font-black shadow-xl shadow-teal-100 flex items-center justify-center space-x-3 active:scale-[0.98] transition-all"
+              className="w-full py-4 bg-teal-600 text-white rounded-2xl font-black shadow-lg shadow-teal-100 flex items-center justify-center space-x-2 active:scale-[0.98] transition-all"
             >
-              {isGenerating ? <Loader2 className="animate-spin" size={24} /> : (
+              {isGenerating ? <Loader2 className="animate-spin" size={20} /> : (
                 <>
-                  <span>Generate Invoice</span>
-                  <ChevronRight size={20} />
+                  <span className="text-sm uppercase tracking-wider">Generate Invoice</span>
+                  <ChevronRight size={18} />
                 </>
               )}
             </button>
@@ -435,45 +435,45 @@ export default function BillingPage() {
       >
         {/* Same Qty Selector Logic as before but with Teal Theme */}
         <div className="space-y-8 py-4">
-          <div className="flex items-center justify-center space-x-8">
+          <div className="flex items-center justify-center space-x-6 sm:space-x-8">
             <button 
               onClick={() => updateQuantity(selectedItem?._id, (cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0) - 1)}
               disabled={!(cartItems.find(i => i.id === selectedItem?._id))}
-              className={`w-16 h-16 rounded-[28px] flex items-center justify-center transition-all font-black text-2xl ${
+              className={`w-12 h-12 rounded-[20px] sm:rounded-[28px] flex items-center justify-center transition-all font-black text-xl sm:text-2xl ${
                 cartItems.find(i => i.id === selectedItem?._id) 
                   ? 'bg-slate-100 text-slate-500 active:bg-slate-200 active:scale-90' 
                   : 'bg-slate-50 text-slate-200 cursor-not-allowed'
               }`}
             >
-              <Minus size={24} />
+              <Minus size={20} className="sm:w-6 sm:h-6" />
             </button>
             <div className="text-center">
-              <span className="text-6xl font-black text-slate-900 leading-none tracking-tighter">
+              <span className="text-4xl sm:text-6xl font-black text-slate-900 leading-none tracking-tighter">
                 {cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0}
               </span>
-              <p className="text-[10px] font-black text-slate-400 uppercase mt-2 tracking-widest">Quantity</p>
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase mt-1.5 sm:mt-2 tracking-widest">Quantity</p>
             </div>
             <button 
               onClick={() => addItem({ id: selectedItem._id, name: selectedItem.name, price: selectedItem.price })}
-              className="w-16 h-16 bg-teal-100 rounded-[28px] flex items-center justify-center text-teal-600 active:bg-teal-200 active:scale-90 transition-all font-black"
+              className="w-12 h-12 bg-teal-100 rounded-[20px] sm:rounded-[28px] flex items-center justify-center text-teal-600 active:bg-teal-200 active:scale-90 transition-all font-black"
             >
-              <Plus size={24} />
+              <Plus size={20} className="sm:w-6 sm:h-6" />
             </button>
           </div>
 
-          <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
-            <span className="text-slate-500 font-bold text-sm uppercase tracking-widest">Item Total</span>
-            <span className="text-3xl font-black text-slate-900 tracking-tighter">
+          <div className="flex items-center justify-between p-4 sm:p-6 bg-slate-50 rounded-2xl sm:rounded-3xl border border-slate-100">
+            <span className="text-slate-500 font-bold text-xs sm:text-sm uppercase tracking-widest">Item Total</span>
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter">
               ₹{(selectedItem?.price || 0) * (cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0)}
             </span>
           </div>
 
           <button 
             onClick={() => setIsQtySheetOpen(false)}
-            className="w-full bg-teal-600 text-white font-black py-5 rounded-[28px] shadow-xl shadow-teal-100 flex items-center justify-center space-x-3 active:scale-95 transition-transform"
+            className="w-full bg-teal-600 text-white font-black py-4 sm:py-5 rounded-2xl sm:rounded-[28px] shadow-xl shadow-teal-100 flex items-center justify-center space-x-2 sm:space-x-3 active:scale-95 transition-transform"
           >
-            <span>Confirm Item</span>
-            <CheckCircle2 size={24} />
+            <span className="text-sm sm:text-base">Confirm Item</span>
+            <CheckCircle2 size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
       </BottomSheet>

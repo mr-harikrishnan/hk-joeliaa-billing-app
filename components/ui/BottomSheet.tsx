@@ -48,17 +48,17 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Bottom
           >
             <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mt-3 mb-2" />
             
-            <div className="px-6 pb-4 flex items-center justify-between border-b border-gray-50">
-              <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+            <div className="px-6 pb-2 sm:pb-4 flex items-center justify-between border-b border-gray-50">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800">{title}</h3>
               <button 
                 onClick={onClose}
-                className="p-2 bg-gray-100 rounded-full text-gray-400 active:scale-90 transition-transform"
+                className="p-1.5 sm:p-2 bg-gray-100 rounded-full text-gray-400 active:scale-90 transition-transform"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
             
-            <div className="px-6 py-6 pb-12 max-h-[80vh] overflow-y-auto">
+            <div className="px-5 sm:px-6 py-4 sm:py-6 pb-8 sm:pb-12 max-h-[80vh] overflow-y-auto">
               {children}
             </div>
           </motion.div>
