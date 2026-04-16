@@ -136,63 +136,63 @@ function BillDetailsContent() {
       {/* Main Bill */}
       <div className={`grid grid-cols-1 gap-8 items-start ${!isAdmin ? '' : 'lg:grid-cols-3'}`}>
         <div className={`${!isAdmin ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
-          <div id="bill-invoice" className="bg-white rounded-[48px] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
+          <div id="bill-invoice" className="bg-white rounded-[24px] sm:rounded-[48px] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
             <div className="h-4 bg-teal-600 w-full" />
             
-            <div className="p-10 sm:p-14 space-y-10">
+            <div className="p-6 sm:p-14 space-y-6 sm:space-y-10">
               <div className="flex flex-col sm:flex-row items-start justify-between space-y-6 sm:space-y-0 text-center sm:text-left">
                 <div className="w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
-                  <h3 className="text-4xl font-black text-teal-600 tracking-tighter leading-none mb-2">
+                  <h3 className="text-2xl sm:text-4xl font-black text-teal-600 tracking-tighter leading-none mb-2">
                     {process.env.NEXT_PUBLIC_BUSINESS_NAME || "JOELIAA"}
                   </h3>
                   <div className="h-1 w-12 bg-teal-500 rounded-full mb-3 mx-auto sm:mx-0" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Premium Homemade</p>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none">Treats & Snacks</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Premium Homemade</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none">Treats & Snacks</p>
                 </div>
               </div>
 
               <div className="h-px bg-gray-100 w-full" />
               
-              <div className="grid grid-cols-2 gap-0 border border-slate-200">
-                <div className="p-4 border-r border-slate-200">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Customer Details</p>
-                  <p className="text-lg font-black text-slate-800 leading-tight">{bill.customerName}</p>
-                  <p className="text-[10px] text-slate-500 mt-2">Place of Supply: Tamil Nadu ( 33 )</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border border-slate-200">
+                <div className="p-4 border-b sm:border-b-0 sm:border-r border-slate-200">
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Customer Details</p>
+                  <p className="text-base sm:text-lg font-black text-slate-800 leading-tight">{bill.customerName}</p>
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 mt-2">Place of Supply: Tamil Nadu ( 33 )</p>
                 </div>
                 <div className="p-0 flex flex-col">
                   <div className="grid grid-cols-2 flex-1 border-b border-slate-200">
-                    <div className="p-4 border-r border-slate-200 flex flex-col justify-center">
-                      <p className="text-[9px] font-black text-slate-400 uppercase">Invoice No.</p>
-                      <p className="text-xs font-bold text-slate-800">INV-{bill._id.substring(bill._id.length - 8).toUpperCase()}</p>
+                    <div className="p-3 sm:p-4 border-r border-slate-200 flex flex-col justify-center">
+                      <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase">Inv No.</p>
+                      <p className="text-[10px] sm:text-xs font-bold text-slate-800">INV-{bill._id.substring(bill._id.length - 6).toUpperCase()}</p>
                     </div>
-                    <div className="p-4 flex flex-col justify-center">
-                      <p className="text-[9px] font-black text-slate-400 uppercase">Dated</p>
-                      <p className="text-xs font-bold text-slate-800">{new Date(bill.createdAt).toLocaleDateString()}</p>
+                    <div className="p-3 sm:p-4 flex flex-col justify-center">
+                      <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase">Dated</p>
+                      <p className="text-[10px] sm:text-xs font-bold text-slate-800">{new Date(bill.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <div className="p-4">
-                    <p className="text-[9px] font-black text-slate-400 uppercase">Terms of Delivery</p>
-                    <p className="text-[10px] font-bold text-slate-800 uppercase italic">Cash on Delivery / Prepaid</p>
+                  <div className="p-3 sm:p-4">
+                    <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase">Terms</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-slate-800 uppercase italic">COD / Prepaid</p>
                   </div>
                 </div>
               </div>
 
               <div className="border-x border-t border-slate-200 overflow-hidden">
-                <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 text-[9px] font-black text-slate-500 uppercase tracking-widest text-center py-2">
+                <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-tight sm:tracking-widest text-center py-2">
                   <div className="col-span-1 border-r border-slate-200">Sl</div>
-                  <div className="col-span-6 border-r border-slate-200 px-2 text-left">Description of Goods</div>
+                  <div className="col-span-6 sm:col-span-7 border-r border-slate-200 px-1 sm:px-2 text-left">Items</div>
                   <div className="col-span-1 border-r border-slate-200">Qty</div>
-                  <div className="col-span-2 border-r border-slate-200">Rate</div>
-                  <div className="col-span-2">Amount</div>
+                  <div className="col-span-2 sm:col-span-1 border-r border-slate-200">Rate</div>
+                  <div className="col-span-2">Total</div>
                 </div>
-                <div className="min-h-[200px]">
+                <div className="min-h-[150px] sm:min-h-[200px]">
                   {bill.items.map((item: any, idx: number) => (
-                    <div key={idx} className="grid grid-cols-12 border-b border-slate-100 text-xs font-bold text-slate-800 text-center py-3">
-                      <div className="col-span-1 border-r border-slate-100 text-slate-400">{idx + 1}</div>
-                      <div className="col-span-6 border-r border-slate-100 px-4 text-left uppercase">{item.name}</div>
-                      <div className="col-span-1 border-r border-slate-100">{item.quantity}</div>
-                      <div className="col-span-2 border-r border-slate-100 text-slate-500">{item.price}.00</div>
-                      <div className="col-span-2 font-black">{item.total}.00</div>
+                    <div key={idx} className="grid grid-cols-12 border-b border-slate-100 text-[10px] sm:text-xs font-bold text-slate-800 text-center py-2 sm:py-3">
+                      <div className="col-span-1 border-r border-slate-100 text-slate-400 flex items-center justify-center">{idx + 1}</div>
+                      <div className="col-span-6 sm:col-span-7 border-r border-slate-100 px-2 sm:px-4 text-left uppercase truncate">{item.name}</div>
+                      <div className="col-span-1 border-r border-slate-100 flex items-center justify-center">{item.quantity}</div>
+                      <div className="col-span-2 sm:col-span-1 border-r border-slate-100 text-slate-500 flex items-center justify-center">{item.price}</div>
+                      <div className="col-span-2 font-black flex items-center justify-center">{item.total}</div>
                     </div>
                   ))}
                 </div>
@@ -204,21 +204,20 @@ function BillDetailsContent() {
                   <div className="col-span-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">Delivery Charges :</div>
                   <div className="col-span-2 text-sm font-black text-slate-900 border-b border-slate-300">₹{bill.deliveryCharge}.00</div>
                 </div>
-                <div className="grid grid-cols-12 bg-teal-50/50 py-4 text-right pr-4">
-                  <div className="col-span-10 flex flex-col items-end pr-2 justify-center">
-                    <span className="text-[11px] font-black text-teal-600 uppercase tracking-[0.2em] leading-none">Grand Total (Rounded)</span>
-                    <span className="text-[9px] text-slate-400 font-bold italic mt-1 uppercase">Inclusive of all convenience fees</span>
+                <div className="grid grid-cols-12 bg-teal-50/50 py-3 sm:py-4 text-right pr-2 sm:pr-4">
+                  <div className="col-span-9 sm:col-span-10 flex flex-col items-end pr-2 justify-center">
+                    <span className="text-[9px] sm:text-[11px] font-black text-teal-600 uppercase tracking-[0.1em] leading-none">Grand Total</span>
                   </div>
-                  <div className="col-span-2 text-3xl font-black text-teal-600 tracking-tighter">₹{bill.grandTotal}</div>
+                  <div className="col-span-3 sm:col-span-2 text-xl sm:text-3xl font-black text-teal-600 tracking-tighter">₹{bill.grandTotal}</div>
                 </div>
               </div>
 
-              <div className="pt-10 space-y-8">
-                <div className="text-center py-10 bg-teal-50/50 rounded-[40px] border border-dashed border-teal-100 relative overflow-hidden">
-                  <p className="text-2xl font-black text-teal-600 relative z-10">
+              <div className="pt-6 sm:pt-10 space-y-6 sm:space-y-8">
+                <div className="text-center py-8 sm:py-10 bg-teal-50/50 rounded-[24px] sm:rounded-[40px] border border-dashed border-teal-100 relative overflow-hidden">
+                  <p className="text-lg sm:text-2xl font-black text-teal-600 relative z-10 px-4">
                     Enjoy your fresh homemade treats! 🧁
                   </p>
-                  <p className="text-[10px] font-bold text-teal-400 uppercase tracking-[0.2em] mt-2">Homemade with quality ingredients</p>
+                  <p className="text-[8px] sm:text-[10px] font-bold text-teal-400 uppercase tracking-[0.2em] mt-2">Homemade with quality ingredients</p>
                 </div>
 
                 <div className="flex flex-col items-center justify-center space-y-4 pt-4">
