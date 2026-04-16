@@ -62,10 +62,6 @@ export default function BillingPage() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleItemTap = (item: any) => {
-    const inCart = cartItems.find(i => i.id === item._id);
-    if (!inCart) {
-      addItem({ id: item._id, name: item.name, price: item.price });
-    }
     setSelectedItem(item);
     setIsQtySheetOpen(true);
   };
@@ -249,19 +245,37 @@ export default function BillingPage() {
             {/* Cart Items List */}
             <div className="flex-1 space-y-4 overflow-y-auto pr-2 max-h-[300px] mb-8 scrollbar-thin">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-2xl group border border-transparent hover:border-slate-100 transition-all">
-                  <div className="flex-1 min-w-0 mr-4">
-                    <p className="font-bold text-slate-800 text-xs truncate">{item.name}</p>
-                    <p className="text-[10px] text-slate-400 font-bold">₹{item.price} x {item.quantity}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
+                <div key={item.id} className="flex flex-col p-4 bg-slate-50/50 rounded-2xl group border border-transparent hover:border-slate-100 transition-all space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-slate-800 text-sm truncate">{item.name}</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">₹{item.price} per unit</p>
+                    </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
-                      className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                      className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
-                    <span className="text-sm font-black text-slate-900">₹{item.price * item.quantity}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100/50">
+                    <div className="flex items-center bg-white rounded-xl border border-slate-100 p-1">
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="w-8 text-center text-xs font-black text-slate-700">{item.quantity}</span>
+                      <button 
+                        onClick={() => addItem({ id: item.id, name: item.name, price: item.price })}
+                        className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                    <span className="text-sm font-black text-teal-600">₹{item.price * item.quantity}</span>
                   </div>
                 </div>
               ))}
@@ -315,19 +329,24 @@ export default function BillingPage() {
         <div className="space-y-8 py-4">
           <div className="flex items-center justify-center space-x-8">
             <button 
-              onClick={() => updateQuantity(selectedItem?._id, (cartItems.find(i => i.id === selectedItem._id)?.quantity || 1) - 1)}
-              className="w-16 h-16 bg-slate-100 rounded-[28px] flex items-center justify-center text-slate-500 active:bg-slate-200 active:scale-90 transition-all font-black text-2xl"
+              onClick={() => updateQuantity(selectedItem?._id, (cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0) - 1)}
+              disabled={!(cartItems.find(i => i.id === selectedItem?._id))}
+              className={`w-16 h-16 rounded-[28px] flex items-center justify-center transition-all font-black text-2xl ${
+                cartItems.find(i => i.id === selectedItem?._id) 
+                  ? 'bg-slate-100 text-slate-500 active:bg-slate-200 active:scale-90' 
+                  : 'bg-slate-50 text-slate-200 cursor-not-allowed'
+              }`}
             >
               <Minus size={24} />
             </button>
             <div className="text-center">
               <span className="text-6xl font-black text-slate-900 leading-none tracking-tighter">
-                {cartItems.find(i => i.id === selectedItem?._id)?.quantity || 1}
+                {cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0}
               </span>
               <p className="text-[10px] font-black text-slate-400 uppercase mt-2 tracking-widest">Quantity</p>
             </div>
             <button 
-              onClick={() => updateQuantity(selectedItem?._id, (cartItems.find(i => i.id === selectedItem._id)?.quantity || 0) + 1)}
+              onClick={() => addItem({ id: selectedItem._id, name: selectedItem.name, price: selectedItem.price })}
               className="w-16 h-16 bg-teal-100 rounded-[28px] flex items-center justify-center text-teal-600 active:bg-teal-200 active:scale-90 transition-all font-black"
             >
               <Plus size={24} />
@@ -337,7 +356,7 @@ export default function BillingPage() {
           <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
             <span className="text-slate-500 font-bold text-sm uppercase tracking-widest">Item Total</span>
             <span className="text-3xl font-black text-slate-900 tracking-tighter">
-              ₹{(selectedItem?.price || 0) * (cartItems.find(i => i.id === selectedItem?._id)?.quantity || 1)}
+              ₹{(selectedItem?.price || 0) * (cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0)}
             </span>
           </div>
 
