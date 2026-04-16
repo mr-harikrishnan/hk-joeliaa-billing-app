@@ -12,6 +12,7 @@ export interface IBill {
   items: IBillItem[];
   subtotal: number;
   deliveryCharge: number;
+  discount: number;
   grandTotal: number;
   status: 'pending' | 'paid';
   createdAt: Date;
@@ -30,6 +31,7 @@ const BillSchema = new Schema<IBill>(
     items: [BillItemSchema],
     subtotal: { type: Number, required: true },
     deliveryCharge: { type: Number, default: 0 },
+    discount: { type: Number, default: 0 },
     grandTotal: { type: Number, required: true },
     status: { type: String, enum: ['pending', 'paid'], default: 'paid' },
   },

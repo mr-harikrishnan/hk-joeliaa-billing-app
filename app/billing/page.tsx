@@ -29,11 +29,14 @@ export default function BillingPage() {
     items: cartItems, 
     addItem, 
     updateQuantity,
+    updatePrice,
     removeItem,
     getSubtotal,
     getGrandTotal,
     deliveryCharge,
     setDeliveryCharge,
+    discount,
+    setDiscount,
     resetCart
   } = useCartStore();
 
@@ -68,10 +71,6 @@ export default function BillingPage() {
   };
 
   const handleGenerateBill = async () => {
-    if (!customerName) {
-      alert('Please enter customer name');
-      return;
-    }
     if (cartItems.length === 0) {
       alert('Please add at least one item');
       return;
@@ -79,7 +78,7 @@ export default function BillingPage() {
 
     setIsGenerating(true);
     const billData = {
-      customerName,
+      customerName: customerName || 'Walk-in Customer',
       items: cartItems.map(i => ({
         name: i.name,
         price: i.price,
@@ -87,8 +86,10 @@ export default function BillingPage() {
         total: i.price * i.quantity
       })),
       subtotal: getSubtotal(),
-      deliveryCharge,
+      deliveryCharge: deliveryCharge || 0,
+      discount: discount || 0,
       grandTotal: getGrandTotal(),
+      status: 'paid'
     };
 
     try {
@@ -228,17 +229,32 @@ export default function BillingPage() {
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery Charge</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
-                  <input 
-                    type="number" 
-                    placeholder="0"
-                    className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-10 pr-4 text-sm font-bold focus:ring-2 focus:ring-teal-100"
-                    value={deliveryCharge || ''}
-                    onChange={(e) => setDeliveryCharge(Number(e.target.value))}
-                  />
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery Charge</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">₹</span>
+                    <input 
+                      type="number" 
+                      placeholder="0"
+                      className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-10 pr-4 text-sm font-black focus:ring-2 focus:ring-teal-100"
+                      value={deliveryCharge || ''}
+                      onChange={(e) => setDeliveryCharge(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-rose-400">Discount</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400 font-bold text-base">-₹</span>
+                    <input 
+                      type="number" 
+                      placeholder="0"
+                      className="w-full bg-rose-50 border-none rounded-2xl py-4 pl-10 pr-4 text-sm font-black focus:ring-2 focus:ring-rose-100 text-rose-600"
+                      value={discount || ''}
+                      onChange={(e) => setDiscount(Number(e.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -250,7 +266,20 @@ export default function BillingPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-slate-800 text-sm truncate">{item.name}</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">₹{item.price} per unit</p>
+                      <div className="flex items-center mt-1 space-x-1.5">
+                        <span className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">₹</span>
+                        <div className="flex items-center bg-white border border-slate-200 rounded-lg px-2 group-hover:border-teal-200 transition-colors py-0.5">
+                          <button onClick={() => updatePrice(item.id, Math.max(0, item.price - 5))} className="p-1 text-slate-400 hover:text-rose-500 transition-colors"><Minus size={12} /></button>
+                          <input 
+                            type="number"
+                            value={item.price}
+                            onChange={(e) => updatePrice(item.id, Number(e.target.value))}
+                            className="w-14 bg-transparent text-center text-xs font-black text-teal-600 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <button onClick={() => updatePrice(item.id, item.price + 5)} className="p-1 text-slate-400 hover:text-teal-600 transition-colors"><Plus size={12} /></button>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-1">/ unit</span>
+                      </div>
                     </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
@@ -293,6 +322,10 @@ export default function BillingPage() {
               <div className="flex justify-between items-center text-sm font-bold text-slate-400">
                 <span>Subtotal</span>
                 <span>₹{getSubtotal()}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm font-bold text-rose-400">
+                <span>Discount</span>
+                <span>-₹{discount || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-lg font-black text-slate-800 tracking-tight">Total Amount</span>
@@ -366,17 +399,32 @@ export default function BillingPage() {
                 />
               </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">₹</span>
-                <input 
-                  type="number" 
-                  placeholder="0"
-                  className="w-full bg-slate-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs font-black focus:ring-2 focus:ring-teal-100"
-                  value={deliveryCharge || ''}
-                  onChange={(e) => setDeliveryCharge(Number(e.target.value))}
-                />
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">₹</span>
+                  <input 
+                    type="number" 
+                    placeholder="0"
+                    className="w-full bg-slate-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs font-black focus:ring-2 focus:ring-teal-100"
+                    value={deliveryCharge || ''}
+                    onChange={(e) => setDeliveryCharge(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 text-rose-400">Discount</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400 font-bold text-base">-₹</span>
+                  <input 
+                    type="number" 
+                    placeholder="0"
+                    className="w-full bg-rose-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs font-black focus:ring-2 focus:ring-rose-100 text-rose-600"
+                    value={discount || ''}
+                    onChange={(e) => setDiscount(Number(e.target.value))}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -386,9 +434,22 @@ export default function BillingPage() {
             {cartItems.map((item) => (
               <div key={item.id} className="flex flex-col p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-bold text-slate-800 text-[11px]">{item.name}</p>
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">₹{item.price}/unit</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-800 text-[11px] truncate">{item.name}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">₹</span>
+                      <div className="flex items-center bg-white border border-slate-200 rounded-lg px-2 py-0.5 shadow-sm">
+                        <button onClick={() => updatePrice(item.id, Math.max(0, item.price - 5))} className="p-1 text-slate-400 active:text-rose-500"><Minus size={12} /></button>
+                        <input 
+                          type="number"
+                          value={item.price}
+                          onChange={(e) => updatePrice(item.id, Number(e.target.value))}
+                          className="w-12 bg-transparent text-center text-xs font-black text-teal-600 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        <button onClick={() => updatePrice(item.id, item.price + 5)} className="p-1 text-slate-400 active:text-teal-600"><Plus size={12} /></button>
+                      </div>
+                      <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">/ unit</span>
+                    </div>
                   </div>
                   <button onClick={() => removeItem(item.id)} className="p-1 text-slate-300 hover:text-red-500">
                     <Trash2 size={14} />
@@ -407,6 +468,10 @@ export default function BillingPage() {
           </div>
 
           <div className="pt-4 border-t border-slate-100 space-y-3">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-sm font-bold text-rose-400 tracking-tight">Discount</span>
+              <span className="text-sm font-bold text-rose-400 tracking-tight">-₹{discount || 0}</span>
+            </div>
             <div className="flex justify-between items-center px-1">
               <span className="text-base font-black text-slate-800 tracking-tight">Total Amount</span>
               <span className="text-2xl font-black text-teal-600 tracking-tighter">₹{getGrandTotal()}</span>
@@ -448,9 +513,14 @@ export default function BillingPage() {
               <Minus size={20} className="sm:w-6 sm:h-6" />
             </button>
             <div className="text-center">
-              <span className="text-4xl sm:text-6xl font-black text-slate-900 leading-none tracking-tighter">
-                {cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0}
-              </span>
+              <input 
+                type="number"
+                inputMode="numeric"
+                value={cartItems.find(i => i.id === selectedItem?._id)?.quantity || 0}
+                onChange={(e) => updateQuantity(selectedItem?._id, Number(e.target.value))}
+                onFocus={(e) => e.target.select()}
+                className="w-24 sm:w-32 bg-transparent text-4xl sm:text-6xl font-black text-slate-900 leading-none tracking-tighter text-center border-none focus:ring-0 p-0 selection:bg-teal-100"
+              />
               <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase mt-1.5 sm:mt-2 tracking-widest">Quantity</p>
             </div>
             <button 

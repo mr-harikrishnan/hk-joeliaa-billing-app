@@ -202,8 +202,14 @@ function BillDetailsContent() {
                 </div>
                 <div className="grid grid-cols-12 bg-slate-50 py-2 border-t border-slate-100 text-right pr-4">
                   <div className="col-span-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">Delivery Charges :</div>
-                  <div className="col-span-2 text-sm font-black text-slate-900 border-b border-slate-300">₹{bill.deliveryCharge}.00</div>
+                  <div className="col-span-2 text-sm font-black text-slate-900 border-b border-slate-200">₹{bill.deliveryCharge}.00</div>
                 </div>
+                {bill.discount > 0 && (
+                  <div className="grid grid-cols-12 bg-rose-50/30 py-2 border-t border-slate-100 text-right pr-4">
+                    <div className="col-span-10 text-[10px] font-black text-rose-400 uppercase tracking-widest">Discount Applied :</div>
+                    <div className="col-span-2 text-sm font-black text-rose-500 border-b border-rose-200">-₹{bill.discount}.00</div>
+                  </div>
+                )}
                 <div className="grid grid-cols-12 bg-teal-50/50 py-3 sm:py-4 text-right pr-2 sm:pr-4">
                   <div className="col-span-9 sm:col-span-10 flex flex-col items-end pr-2 justify-center">
                     <span className="text-[9px] sm:text-[11px] font-black text-teal-600 uppercase tracking-[0.1em] leading-none">Grand Total</span>

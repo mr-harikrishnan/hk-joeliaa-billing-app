@@ -11,11 +11,14 @@ interface CartState {
   customerName: string;
   items: CartItem[];
   deliveryCharge: number;
+  discount: number;
   setCustomerName: (name: string) => void;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updatePrice: (id: string, price: number) => void;
   setDeliveryCharge: (charge: number) => void;
+  setDiscount: (discount: number) => void;
   resetCart: () => void;
   getSubtotal: () => number;
   getGrandTotal: () => number;
@@ -25,6 +28,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   customerName: '',
   items: [],
   deliveryCharge: 0,
+  discount: 0,
   setCustomerName: (name) => set({ customerName: name }),
   addItem: (newItem) => {
     const existing = get().items.find((i) => i.id === newItem.id);
@@ -50,12 +54,18 @@ export const useCartStore = create<CartState>((set, get) => ({
       });
     }
   },
+  updatePrice: (id, price) => {
+    set({
+      items: get().items.map((i) => (i.id === id ? { ...i, price } : i)),
+    });
+  },
   setDeliveryCharge: (charge) => set({ deliveryCharge: charge }),
-  resetCart: () => set({ customerName: '', items: [], deliveryCharge: 0 }),
+  setDiscount: (discount) => set({ discount }),
+  resetCart: () => set({ customerName: '', items: [], deliveryCharge: 0, discount: 0 }),
   getSubtotal: () => {
     return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   },
   getGrandTotal: () => {
-    return get().getSubtotal() + get().deliveryCharge;
+    return get().getSubtotal() + get().deliveryCharge - get().discount;
   },
 }));
