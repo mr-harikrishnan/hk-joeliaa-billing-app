@@ -18,8 +18,11 @@ import {
   Save, 
   IndianRupee, 
   ChevronLeft,
+  ChevronRight,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  History,
+  Printer
 } from 'lucide-react';
 import { generatePDF, exportToImage } from '@/utils/export';
 

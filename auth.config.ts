@@ -10,30 +10,40 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isAuthPage = nextUrl.pathname.startsWith("/login");
-      const isUnauthorizedPage = nextUrl.pathname.startsWith("/unauthorized");
-      const isBillView = nextUrl.pathname.startsWith("/bills/");
-      const isCustomerMode = nextUrl.searchParams.get("mode")?.includes("customer");
-      
-      // Allow static assets and public logo always
-      const isPublicAsset = nextUrl.pathname.match(/\.(png|jpg|jpeg|svg|ico)$/);
+      const { pathname, searchParams, origin } = nextUrl;
+
+      // Public Assets & Logo (Always Allowed)
+      const isPublicAsset = pathname.match(/\.(png|jpg|jpeg|svg|ico|webp)$/);
       if (isPublicAsset) return true;
 
-      // Explicitly allow Unauthorized page to be viewed even if not logged in
-      if (isUnauthorizedPage) return true;
+      // Handle Bill Direct View (Customer Perspective)
+      const isBillView = pathname.startsWith("/bills/");
+      const isCustomerMode = searchParams.get("mode")?.includes("customer");
+      if (isBillView && isCustomerMode) return true;
 
-      // Logic for bills [id]
-      if (isBillView) {
-        if (isCustomerMode) return true;
-        return isLoggedIn;
-      }
-
+      // Auth Pages Logic
+      const isAuthPage = pathname.startsWith("/login");
+      const isUnauthorizedPage = pathname.startsWith("/unauthorized");
+      
       if (isAuthPage) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl.origin));
+        if (isLoggedIn) return Response.redirect(new URL("/", origin));
         return true;
       }
 
-      return isLoggedIn;
+      if (isUnauthorizedPage) return true;
+
+      // Protect everything else
+      if (!isLoggedIn) {
+        let callbackUrl = pathname;
+        if (searchParams.toString()) {
+          callbackUrl += `?${searchParams.toString()}`;
+        }
+        
+        const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+        return Response.redirect(new URL(`/login?callbackUrl=${encodedCallbackUrl}`, origin));
+      }
+
+      return true;
     },
   },
   providers: [], 

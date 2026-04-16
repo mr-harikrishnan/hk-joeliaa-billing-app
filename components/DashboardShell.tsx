@@ -3,37 +3,34 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense } from 'react';
+import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isAdminLocally, setIsAdminLocally] = useState<boolean | null>(null);
-
-  // Check for the physical "Admin Key" in this specific browser instance
-  useEffect(() => {
-    const isActive = localStorage.getItem('joeliaa_admin_active') === 'true';
-    setIsAdminLocally(isActive);
-  }, []);
+  const { status } = useSession();
   
-  // Robust detection for customer view
-  const isCustomerMode = searchParams.get('mode')?.includes('customer') || pathname.startsWith('/bills/');
+  // Robust detection for customer view/bill view
+  const isBillView = pathname.startsWith('/bills/');
+  const isCustomerMode = searchParams.get('mode')?.includes('customer');
+  const isPublicView = isBillView && (isCustomerMode || status === 'unauthenticated');
 
-  // If still checking OR it's a customer view, OR the ADMIN KEY is missing on a dashboard route
-  if (isCustomerMode || isAdminLocally === false) {
+  // If its a public customer view, render without shell elements
+  if (isPublicView) {
     return (
       <main className="min-h-[100dvh] w-full bg-white relative z-50">
-        <div className="max-w-7xl mx-auto px-4 py-10">
+        <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
           {children}
         </div>
       </main>
     );
   }
 
-  // Professional Full-Page State Check
-  if (isAdminLocally === null) {
+  // Loading state while session is being verified
+  if (status === 'loading') {
      return (
         <div className="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center p-8 text-center space-y-6">
            <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xl animate-pulse">
@@ -47,8 +44,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
      );
   }
 
+  // Final Dashboard UI for Authenticated Admins
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#f8fafc]">
       {/* Sidebar for Desktop */}
       <Suspense fallback={null}>
         <Sidebar />

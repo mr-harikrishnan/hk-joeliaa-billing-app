@@ -77,7 +77,14 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center space-x-4 bg-white p-2 pr-6 rounded-2xl shadow-sm border border-slate-100">
           <div className="relative w-12 h-12 rounded-xl overflow-hidden shadow-sm">
-            <Image src="/JOELIAA.png" alt="Branding" fill className="object-cover" />
+            <Image 
+              src="/JOELIAA.png" 
+              alt="Branding" 
+              fill 
+              priority 
+              sizes="48px"
+              className="object-cover" 
+            />
           </div>
           <div className="hidden sm:block">
             <h3 className="text-sm font-black text-slate-800 leading-none">
@@ -118,9 +125,9 @@ export default function Dashboard() {
               <span className="text-xs font-bold text-slate-400">Past 30 Days</span>
             </div>
           </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data?.chartData || []}>
+          <div className="h-72 w-full" style={{ minWidth: 0 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={288}>
+              <AreaChart data={data?.chartData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0d9488" stopOpacity={0.1}/>

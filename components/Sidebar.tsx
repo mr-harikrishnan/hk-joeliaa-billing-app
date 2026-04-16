@@ -51,7 +51,7 @@ export default function Sidebar() {
       {/* Nav Links */}
       <nav className="flex-1 space-y-2">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
           const Icon = item.icon;
           
           return (
@@ -59,14 +59,19 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all group",
+                "flex items-center space-x-3 px-4 py-4 rounded-2xl text-[13px] font-bold transition-all duration-300 group",
                 isActive 
-                  ? "bg-teal-600 text-white shadow-lg shadow-teal-100 translate-x-1" 
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                  ? "bg-teal-600 text-white shadow-[0_10px_20px_-5px_rgba(13,148,136,0.3)] translate-x-1" 
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 2} className={cn(!isActive && "group-hover:text-teal-500")} />
-              <span>{item.name}</span>
+              <div className={cn(
+                "p-2 rounded-xl transition-colors duration-300",
+                isActive ? "bg-white/10" : "bg-transparent group-hover:bg-teal-50"
+              )}>
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className={cn(!isActive && "group-hover:text-teal-600")} />
+              </div>
+              <span className="tracking-tight">{item.name}</span>
             </Link>
           );
         })}
