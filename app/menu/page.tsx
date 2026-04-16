@@ -243,8 +243,8 @@ export default function MenuPage() {
                 `}>
                   <PackageCheck size={viewMode === 'grid' ? 40 : 28} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-800 truncate leading-tight">{item.name}</h3>
+                <div className="flex-1 w-full min-w-0">
+                  <h3 className="font-bold text-slate-800 line-clamp-2 break-words leading-tight mb-1">{item.name}</h3>
                   <p className="text-teal-600 font-black text-lg">₹{item.price}</p>
                 </div>
               </div>
