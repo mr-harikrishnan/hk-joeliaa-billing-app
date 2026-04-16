@@ -1,10 +1,10 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 
 export interface IMenuItem {
-  category: string; // References Category name or ID
+  category: string;
   name: string;
   price: number;
-  unit: string; // e.g., 'kg', 'piece', 'pkt'
+  unit?: string;
   image?: string;
   available: boolean;
 }
@@ -14,7 +14,7 @@ const MenuItemSchema = new Schema<IMenuItem>(
     category: { type: String, required: true },
     name: { type: String, required: true },
     price: { type: Number, required: true },
-    unit: { type: String, default: 'kg' },
+    unit: { type: String, default: 'pcs' },
     image: { type: String },
     available: { type: Boolean, default: true },
   },
