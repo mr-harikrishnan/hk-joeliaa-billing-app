@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0d9488; /* Teal 600 */
+  --color-secondary: #0f766e; /* Teal 700 */
+  --color-accent: #10b981; /* Emerald 500 */
+  --color-background: #f8fafc; /* Slate 50 - clean & professional */
+  --color-surface: #ffffff;
+  --color-dark: #0f172a; /* Slate 900 */
+}
+
+:root {
+  --font-inter: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: #0f172a;
+  font-family: var(--font-inter);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+}
+
+/* Custom Utilities */
+.glass-effect {
+  @apply bg-white/80 backdrop-blur-md border border-white/20;
+}
+
+.nav-active {
+  @apply text-teal-600 bg-teal-50 font-bold;
+}
+
+/* Updated Container: Full width on desktop, restricted nicely on mobile if desired, 
+   but user wants full desktop width. */
+.app-container {
+  @apply min-h-screen relative flex flex-col md:flex-row;
+}
+
+.main-content {
+  @apply flex-1 pb-20 md:pb-0; /* Mobile footer space, none on desktop */
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-300;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
