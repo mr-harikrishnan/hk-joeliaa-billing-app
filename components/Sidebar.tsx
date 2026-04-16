@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useEffect, useState } from 'react';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,8 +33,21 @@ export default function Sidebar() {
   const isAuthPage = pathname === '/login' || pathname === '/unauthorized';
   const isCustomerMode = searchParams.get('mode') === 'customer';
 
-  // Hide sidebar if in customer mode, on auth pages, OR if user is not logged in
-  if (isAuthPage || isCustomerMode || status !== 'authenticated') return null;
+  // Hide sidebar if in customer mode OR if we are on an auth page without a persistent token
+  // If we have a local token, we show the sidebar even if session is loading/expired (to avoid flickering)
+  const [hasToken, setHasToken] = useState(false);
+  
+  useEffect(() => {
+    setHasToken(!!localStorage.getItem('joeliaa_admin_token'));
+  }, []);
+
+  if (isCustomerMode || (isAuthPage && !hasToken)) return null;
+  if (status !== 'authenticated' && !hasToken) return null;
+
+  const handleSignOut = async () => {
+    localStorage.removeItem('joeliaa_admin_token');
+    await signOut({ callbackUrl: '/login' });
+  };
 
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-white border-r border-slate-100 p-6 shadow-sm overflow-hidden z-20">
@@ -89,7 +103,7 @@ export default function Sidebar() {
           </div>
         </div>
         <button 
-          onClick={() => signOut()}
+          onClick={handleSignOut}
           className="w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all group"
         >
           <LogOut size={20} className="group-hover:translate-x-1 transition-transform" />

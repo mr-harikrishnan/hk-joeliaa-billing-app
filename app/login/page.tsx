@@ -34,6 +34,8 @@ function LoginForm() {
         setError('Invalid credentials. Please try again.');
         setLoading(false);
       } else {
+        // Persist admin session state in local storage for auto-redirect and shell visibility
+        localStorage.setItem('joeliaa_admin_token', 'active_admin_session');
         setSuccess(true);
         setTimeout(() => {
           router.push(callbackUrl);

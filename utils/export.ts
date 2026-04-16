@@ -58,7 +58,7 @@ export async function generatePDF(bill: any) {
   drawText('Thank you for your order!', width / 2 - 60, currentY, 10);
 
   const pdfBytes = await pdfDoc.save();
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = `Bill_${bill.customerName}_${bill._id.substring(0, 8)}.pdf`;

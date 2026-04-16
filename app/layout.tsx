@@ -32,17 +32,11 @@ export default async function RootLayout({
     <html lang="en" className="h-full">
       <body className={`${inter.className} bg-[#f8fafc] antialiased overflow-x-hidden min-h-screen h-full`}>
         <Providers>
-          {isLoggedIn ? (
-            <Suspense fallback={null}>
-              <DashboardShell>
-                {children}
-              </DashboardShell>
-            </Suspense>
-          ) : (
-            <main className="min-h-[100dvh] w-full bg-white relative z-50">
+          <Suspense fallback={null}>
+            <DashboardShell>
               {children}
-            </main>
-          )}
+            </DashboardShell>
+          </Suspense>
         </Providers>
       </body>
     </html>

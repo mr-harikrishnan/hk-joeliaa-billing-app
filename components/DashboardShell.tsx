@@ -1,9 +1,9 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -11,12 +11,35 @@ import Image from 'next/image';
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { status } = useSession();
+  const [hasLocalToken, setHasLocalToken] = useState<boolean | null>(null);
   
   // Robust detection for customer view/bill view
   const isBillView = pathname.startsWith('/bills/');
   const isCustomerMode = searchParams.get('mode')?.includes('customer');
   const isPublicView = isBillView && (isCustomerMode || status === 'unauthenticated');
+  const isAuthPage = pathname === '/login' || pathname === '/unauthorized';
+
+  // Check for the physical token in this browser instance
+  useEffect(() => {
+    const token = localStorage.getItem('joeliaa_admin_token');
+    setHasLocalToken(!!token);
+  }, []);
+
+  // Handle Side-Effects (Auto-Redirect for returning users)
+  useEffect(() => {
+    // If we have a local token but we're on the login page, go to dashboard
+    if (hasLocalToken && pathname === '/login') {
+      router.push('/');
+    }
+    
+    // If we are definitely NOT authenticated AND have NO local token, go to login
+    // but only if we ARE NOT already on a public/auth page
+    if (hasLocalToken === false && status === 'unauthenticated' && !isPublicView && !isAuthPage) {
+       router.push('/login');
+    }
+  }, [hasLocalToken, status, pathname, router, isPublicView, isAuthPage]);
 
   // If its a public customer view, render without shell elements
   if (isPublicView) {
@@ -29,8 +52,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     );
   }
 
-  // Loading state while session is being verified
-  if (status === 'loading') {
+  // If user is on an auth page, just show the page (login/unauthorized)
+  if (isAuthPage) {
+    return <main className="min-h-screen w-full bg-white">{children}</main>;
+  }
+
+  // Loading state while either token or session is being verified
+  // We only show loading if we DON'T have a token and we are STILL loading the session
+  if (hasLocalToken === null || (status === 'loading' && !hasLocalToken)) {
      return (
         <div className="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center p-8 text-center space-y-6">
            <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xl animate-pulse">
@@ -44,7 +73,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
      );
   }
 
-  // Final Dashboard UI for Authenticated Admins
+  // FINAL SAFETY: If we are unauthenticated and have no token, DO NOT show the dashboard UI
+  // This state should eventually be handled by the redirect effect above, but we prevent 
+  // the UI from rendering in the meantime.
+  if (status === 'unauthenticated' && !hasLocalToken) {
+    return <main className="min-h-screen w-full bg-white" />;
+  }
+
+  // Final Dashboard UI for Authenticated Admins OR users with local token
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#f8fafc]">
       {/* Sidebar for Desktop */}

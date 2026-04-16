@@ -13,14 +13,16 @@ async function seed() {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Delete existing if any to ensure clean state
-    await mongoose.connection.db.collection('users').deleteOne({ email });
-    
-    // Insert fresh
-    await mongoose.connection.db.collection('users').insertOne({
-      email,
-      password: hashedPassword,
-      createdAt: new Date(),
-    });
+    if (mongoose.connection.db) {
+      await mongoose.connection.db.collection('users').deleteOne({ email });
+      
+      // Insert fresh
+      await mongoose.connection.db.collection('users').insertOne({
+        email,
+        password: hashedPassword,
+        createdAt: new Date(),
+      });
+    }
 
     console.log("Admin user joeliaa@gmail.com seeded successfully!");
     process.exit(0);

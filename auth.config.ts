@@ -32,16 +32,11 @@ export const authConfig = {
 
       if (isUnauthorizedPage) return true;
 
-      // Protect everything else
-      if (!isLoggedIn) {
-        let callbackUrl = pathname;
-        if (searchParams.toString()) {
-          callbackUrl += `?${searchParams.toString()}`;
-        }
-        
-        const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-        return Response.redirect(new URL(`/login?callbackUrl=${encodedCallbackUrl}`, origin));
-      }
+      // Protect everything else (dashboard routes)
+      // We allow them to load even if !isLoggedIn so that the client-side 
+      // DashboardShell can check for the localStorage 'joeliaa_admin_token'.
+      // Redirection to /login will happen in DashboardShell if no token is found.
+      return true;
 
       return true;
     },
