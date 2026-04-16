@@ -83,7 +83,7 @@ function BillDetailsContent() {
         </div>
         <button 
           onClick={fetchBill}
-          className="flex items-center space-x-3 px-8 py-4 bg-slate-900 text-white rounded-[24px] font-black shadow-lg hover:bg-slate-800 transition-all active:scale-95"
+          className="flex items-center space-x-3 px-8 py-4 bg-slate-900 text-white rounded-3xl font-black shadow-lg hover:bg-slate-800 transition-all active:scale-95"
         >
           <RefreshCw size={18} />
           <span>Try Again</span>
@@ -139,7 +139,7 @@ function BillDetailsContent() {
       {/* Main Bill */}
       <div className={`grid grid-cols-1 gap-8 items-start ${!isAdmin ? '' : 'lg:grid-cols-3'}`}>
         <div className={`${!isAdmin ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
-          <div id="bill-invoice" className="bg-white rounded-[24px] sm:rounded-[48px] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
+          <div id="bill-invoice" className="bg-white rounded-3xl sm:rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
             <div className="h-4 bg-teal-600 w-full" />
             
             <div className="p-6 sm:p-14 space-y-6 sm:space-y-10">
@@ -222,7 +222,7 @@ function BillDetailsContent() {
               </div>
 
               <div className="pt-6 sm:pt-10 space-y-6 sm:space-y-8">
-                <div className="text-center py-8 sm:py-10 bg-teal-50/50 rounded-[24px] sm:rounded-[40px] border border-dashed border-teal-100 relative overflow-hidden">
+                <div className="text-center py-8 sm:py-10 bg-teal-50/50 rounded-3xl sm:rounded-3xl border border-dashed border-teal-100 relative overflow-hidden">
                   <p className="text-lg sm:text-2xl font-black text-teal-600 relative z-10 px-4">
                     Enjoy your fresh homemade treats! 🧁
                   </p>
@@ -285,7 +285,7 @@ function BillDetailsContent() {
         {/* Action Sidebar (Admin View Only) */}
         {isAdmin && (
           <div className="space-y-6">
-            <div className="bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200 border border-slate-100 space-y-8">
+            <div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200 border border-slate-100 space-y-8">
               <div>
                 <h3 className="text-lg font-black text-slate-800 mb-2">Admin Panel</h3>
                 <p className="text-xs text-slate-500 font-medium">Manage this invoice record</p>
@@ -319,14 +319,14 @@ function BillDetailsContent() {
 
               <button 
                 onClick={handleShare}
-                className="w-full py-5 bg-teal-600 text-white rounded-[24px] font-black shadow-xl shadow-teal-100 flex items-center justify-center space-x-3 hover:translate-y-[-2px] active:scale-95 transition-all"
+                className="w-full py-5 bg-teal-600 text-white rounded-3xl font-black shadow-xl shadow-teal-100 flex items-center justify-center space-x-3 hover:translate-y-[-2px] active:scale-95 transition-all"
               >
                 <Share2 size={24} />
                 <span>Quick Share</span>
               </button>
             </div>
 
-            <div className="bg-emerald-500 p-8 rounded-[40px] shadow-lg shadow-emerald-100 relative overflow-hidden">
+            <div className="bg-emerald-500 p-8 rounded-3xl shadow-lg shadow-emerald-100 relative overflow-hidden">
               <div className="relative z-10 text-white">
                 <CheckCircle2 size={40} className="mb-4 opacity-40" />
                 <h3 className="text-xl font-black mb-1 leading-tight text-white">Another order?</h3>

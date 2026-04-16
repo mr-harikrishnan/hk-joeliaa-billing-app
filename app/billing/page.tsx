@@ -80,13 +80,18 @@ export default function BillingPage() {
 
   const handleGenerateBill = async () => {
     if (cartItems.length === 0) {
-      alert('Please add at least one item');
+      alert('Please add items to the cart first');
+      return;
+    }
+
+    if (!customerName.trim()) {
+      alert('Please enter customer name to proceed');
       return;
     }
 
     setIsGenerating(true);
     const billData = {
-      customerName: customerName || 'Walk-in Customer',
+      customerName: customerName.trim(),
       items: cartItems.map(i => ({
         name: i.name,
         price: i.price,
@@ -137,7 +142,7 @@ export default function BillingPage() {
         {/* Left Column: Product Selection (2/3 width on desktop) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Search & Category Filter */}
-          <div className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 space-y-6">
+          <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-6">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input 
@@ -183,7 +188,7 @@ export default function BillingPage() {
                     key={item._id}
                     onClick={() => handleItemTap(item)}
                     className={`
-                      relative group bg-white p-3 sm:p-6 rounded-[24px] sm:rounded-[32px] shadow-sm border transition-all active:scale-95 text-left
+                      relative group bg-white p-3 sm:p-6 rounded-[24px] sm:rounded-3xl shadow-sm border transition-all active:scale-95 text-left
                       ${inCart 
                         ? 'border-teal-500 ring-4 ring-teal-50 shadow-md' 
                         : 'border-slate-100 hover:border-teal-200 hover:shadow-md'}
@@ -217,7 +222,7 @@ export default function BillingPage() {
 
         {/* Right Column: Checkout Sidebar (Hidden on mobile, FAB shows it) */}
         <div className="hidden lg:block space-y-6">
-          <div className="bg-white rounded-[40px] shadow-sm border border-slate-100 p-8 sticky top-6 flex flex-col min-h-[500px]">
+          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 sticky top-6 flex flex-col min-h-[500px]">
             <div className="flex items-center space-x-3 mb-8">
               <div className="p-3 bg-teal-50 text-teal-600 rounded-2xl">
                 <ShoppingCart size={24} />

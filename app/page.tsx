@@ -108,7 +108,7 @@ export default function Dashboard() {
         {cards.map((card) => (
           <div
             key={card.title}
-            className="bg-white p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between group hover:shadow-md transition-all duration-300"
+            className="bg-white p-4 sm:p-6 rounded-[24px] sm:rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:shadow-md transition-all duration-300"
           >
             <div
               className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${card.color} flex items-center justify-center mb-4 sm:mb-6`}
@@ -139,7 +139,7 @@ export default function Dashboard() {
       {/* Main Analytics Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Large Chart */}
-        <div className="lg:col-span-2 bg-white p-5 sm:p-8 rounded-[32px] sm:rounded-[40px] shadow-sm border border-slate-100">
+        <div className="lg:col-span-2 bg-white p-5 sm:p-8 rounded-3xl sm:rounded-3xl shadow-sm border border-slate-100">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-slate-800 tracking-tight">
               Revenue Trends
@@ -209,7 +209,7 @@ export default function Dashboard() {
         </div>
 
         {/* CTA Card */}
-        <div className="bg-teal-600 p-8 rounded-[40px] shadow-xl shadow-teal-100 relative overflow-hidden flex flex-col justify-between">
+        <div className="bg-teal-600 p-8 rounded-3xl shadow-xl shadow-teal-100 relative overflow-hidden flex flex-col justify-between">
           <div className="relative z-10">
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
               <IndianRupee className="text-white" size={28} />
