@@ -18,7 +18,10 @@ import {
   AlertCircle,
   History,
   Printer,
-  ChevronRight
+  ChevronRight,
+  Wallet,
+  Smartphone,
+  Banknote
 } from 'lucide-react';
 import { generatePDF, exportToImage } from '@/utils/export';
 import { authService } from '@/lib/auth-service';
@@ -231,7 +234,47 @@ function BillDetailsContent() {
                     <PhoneCall size={20} className="text-teal-600" />
                     <span>{process.env.NEXT_PUBLIC_BUSINESS_PHONE || "+91 90426 85346"}</span>
                   </div>
-                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Computer Generated Invoice</p>
+                  
+                  {/* Payment Details Section */}
+                  <div className="w-full max-w-xs mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Payment Summary</span>
+                      <div className="flex items-center space-x-1.5 px-3 py-1 bg-white rounded-full border border-slate-200 shadow-sm">
+                        {bill.paymentMethod === 'upi' ? (
+                          <>
+                            <Smartphone size={12} className="text-teal-600" />
+                            <span className="text-[10px] font-black text-teal-600 uppercase">UPI Pay</span>
+                          </>
+                        ) : (
+                          <>
+                            <Banknote size={12} className="text-emerald-600" />
+                            <span className="text-[10px] font-black text-emerald-600 uppercase">Cash Pay</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase">Total Bill</span>
+                        <span className="text-xs font-black text-slate-800 tracking-tight">₹{bill.grandTotal}</span>
+                      </div>
+                      {bill.paymentMethod === 'cash' && (
+                        <>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase">Amount Given</span>
+                            <span className="text-xs font-black text-slate-800 tracking-tight">₹{bill.amountReceived || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-center pt-2 border-t border-dashed border-slate-200">
+                            <span className="text-[9px] font-black text-teal-600 uppercase">Balance Returned</span>
+                            <span className="text-sm font-black text-teal-600 tracking-tight">₹{bill.changeReturned || 0}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mt-4">Computer Generated Invoice</p>
                 </div>
               </div>
             </div>

@@ -14,6 +14,9 @@ export interface IBill {
   deliveryCharge: number;
   discount: number;
   grandTotal: number;
+  paymentMethod: 'cash' | 'upi';
+  amountReceived?: number;
+  changeReturned?: number;
   status: 'pending' | 'paid';
   createdAt: Date;
 }
@@ -33,6 +36,9 @@ const BillSchema = new Schema<IBill>(
     deliveryCharge: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
     grandTotal: { type: Number, required: true },
+    paymentMethod: { type: String, enum: ['cash', 'upi'], default: 'upi' },
+    amountReceived: { type: Number },
+    changeReturned: { type: Number },
     status: { type: String, enum: ['pending', 'paid'], default: 'paid' },
   },
   { timestamps: true }

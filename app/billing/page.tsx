@@ -12,7 +12,9 @@ import {
   CheckCircle2,
   Loader2,
   Trash2,
-  Package
+  Package,
+  Smartphone,
+  Banknote
 } from 'lucide-react';
 import { useMenuStore } from '@/store/useMenuStore';
 import { useCartStore } from '@/store/useCartStore';
@@ -37,6 +39,11 @@ export default function BillingPage() {
     setDeliveryCharge,
     discount,
     setDiscount,
+    paymentMethod,
+    setPaymentMethod,
+    amountReceived,
+    setAmountReceived,
+    changeReturned,
     resetCart
   } = useCartStore();
 
@@ -88,6 +95,9 @@ export default function BillingPage() {
       subtotal: getSubtotal(),
       deliveryCharge: deliveryCharge || 0,
       discount: discount || 0,
+      paymentMethod,
+      amountReceived: paymentMethod === 'cash' ? amountReceived : 0,
+      changeReturned: paymentMethod === 'cash' ? changeReturned : 0,
       grandTotal: getGrandTotal(),
       status: 'paid'
     };
@@ -257,6 +267,58 @@ export default function BillingPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Payment Selection */}
+              <div className="space-y-3 mb-8">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Payment Method</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => setPaymentMethod('upi')}
+                    className={`flex items-center justify-center space-x-2 py-4 rounded-2xl border-2 transition-all ${
+                      paymentMethod === 'upi' 
+                        ? 'bg-teal-50 border-teal-600 text-teal-700 font-black' 
+                        : 'bg-white border-slate-100 text-slate-400 font-bold'
+                    }`}
+                  >
+                    <Smartphone size={18} />
+                    <span>UPI</span>
+                  </button>
+                  <button 
+                    onClick={() => setPaymentMethod('cash')}
+                    className={`flex items-center justify-center space-x-2 py-4 rounded-2xl border-2 transition-all ${
+                      paymentMethod === 'cash' 
+                        ? 'bg-teal-50 border-teal-600 text-teal-700 font-black' 
+                        : 'bg-white border-slate-100 text-slate-400 font-bold'
+                    }`}
+                  >
+                    <Banknote size={18} />
+                    <span>Cash</span>
+                  </button>
+                </div>
+
+                {paymentMethod === 'cash' && (
+                  <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-slate-100 mt-2 animate-in slide-in-from-top-2">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Amount Received</label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
+                        <input 
+                          type="number"
+                          placeholder="Enter amount"
+                          value={amountReceived || ''}
+                          onChange={(e) => setAmountReceived(Number(e.target.value))}
+                          onFocus={(e) => e.target.select()}
+                          className="w-full bg-white border-none rounded-xl py-3 pl-8 pr-4 text-sm font-black text-slate-800"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[9px] font-black text-slate-400 uppercase">Change to Return</span>
+                      <span className="text-lg font-black text-teal-600">₹{changeReturned}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Cart Items List */}
@@ -399,32 +461,86 @@ export default function BillingPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">₹</span>
-                  <input 
-                    type="number" 
-                    placeholder="0"
-                    className="w-full bg-slate-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs font-black focus:ring-2 focus:ring-teal-100"
-                    value={deliveryCharge || ''}
-                    onChange={(e) => setDeliveryCharge(Number(e.target.value))}
-                  />
+            <div className="space-y-4 mb-6">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Delivery</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
+                    <input 
+                      type="number" 
+                      placeholder="0"
+                      className="w-full bg-slate-50 border-none rounded-xl py-3 pl-8 pr-4 text-xs font-black focus:ring-2 focus:ring-teal-100"
+                      value={deliveryCharge || ''}
+                      onChange={(e) => setDeliveryCharge(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 text-rose-400">Discount</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400 font-bold text-sm">-₹</span>
+                    <input 
+                      type="number" 
+                      placeholder="0"
+                      className="w-full bg-rose-50 border-none rounded-xl py-3 pl-8 pr-4 text-xs font-black focus:ring-2 focus:ring-rose-100 text-rose-600"
+                      value={discount || ''}
+                      onChange={(e) => setDiscount(Number(e.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 text-rose-400">Discount</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400 font-bold text-base">-₹</span>
-                  <input 
-                    type="number" 
-                    placeholder="0"
-                    className="w-full bg-rose-50 border-none rounded-xl py-3 pl-10 pr-4 text-xs font-black focus:ring-2 focus:ring-rose-100 text-rose-600"
-                    value={discount || ''}
-                    onChange={(e) => setDiscount(Number(e.target.value))}
-                  />
+
+              {/* Mobile Payment Selection */}
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Payment Method</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button 
+                    onClick={() => setPaymentMethod('upi')}
+                    className={`flex items-center justify-center space-x-1.5 py-3 rounded-xl border-2 transition-all ${
+                      paymentMethod === 'upi' 
+                        ? 'bg-teal-50 border-teal-600 text-teal-700 font-black' 
+                        : 'bg-white border-slate-100 text-slate-400 font-bold'
+                    }`}
+                  >
+                    <Smartphone size={14} />
+                    <span className="text-[10px]">UPI</span>
+                  </button>
+                  <button 
+                    onClick={() => setPaymentMethod('cash')}
+                    className={`flex items-center justify-center space-x-1.5 py-3 rounded-xl border-2 transition-all ${
+                      paymentMethod === 'cash' 
+                        ? 'bg-teal-50 border-teal-600 text-teal-700 font-black' 
+                        : 'bg-white border-slate-100 text-slate-400 font-bold'
+                    }`}
+                  >
+                    <Banknote size={14} />
+                    <span className="text-[10px]">CASH</span>
+                  </button>
                 </div>
+
+                {paymentMethod === 'cash' && (
+                  <div className="space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-100 mt-1 animate-in slide-in-from-top-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] font-black text-slate-400 uppercase">Received</span>
+                      <div className="relative w-24">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">₹</span>
+                        <input 
+                          type="number"
+                          placeholder="0"
+                          value={amountReceived || ''}
+                          onChange={(e) => setAmountReceived(Number(e.target.value))}
+                          onFocus={(e) => e.target.select()}
+                          className="w-full bg-white border border-slate-100 rounded-lg py-1.5 pl-5 pr-2 text-xs font-black text-slate-800 text-right"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center border-t border-slate-100 pt-2">
+                      <span className="text-[8px] font-black text-slate-400 uppercase">Change to Return</span>
+                      <span className="text-sm font-black text-teal-600">₹{changeReturned}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
