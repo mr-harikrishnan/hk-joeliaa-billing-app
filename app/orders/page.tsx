@@ -26,12 +26,6 @@ export default function OrdersPage() {
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : [];
         setBills(data);
-        
-        // Auto-expand today's date if exists
-        const todayStr = new Date().toLocaleDateString(undefined, { 
-          day: 'numeric', month: 'long', year: 'numeric' 
-        });
-        setExpandedDates({ [todayStr]: true });
       })
       .catch(err => console.error('Failed to fetch bills', err))
       .finally(() => setLoading(false));
