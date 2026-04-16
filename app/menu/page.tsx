@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import BottomSheet from '@/components/ui/BottomSheet';
 import { useMenuStore } from '@/store/useMenuStore';
+import { api } from '@/lib/api';
 
 export default function MenuPage() {
   const { items, categories, fetchMenu, loading } = useMenuStore();
@@ -39,7 +40,7 @@ export default function MenuPage() {
     }
   }, [categories, activeCategory]);
 
-  const filteredItems = items
+  const filteredItems = (Array.isArray(items) ? items : [])
     .filter(item => {
       const matchesCategory = item.category === activeCategory;
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -61,28 +62,30 @@ export default function MenuPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = '/api/menu';
-    const method = editingItem ? 'PUT' : 'POST';
+    const method = editingItem ? 'put' : 'post';
     const body = editingItem 
       ? { ...formData, _id: editingItem._id, price: Number(formData.price) }
       : { ...formData, price: Number(formData.price) };
 
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    if (res.ok) {
-      setIsSheetOpen(false);
-      fetchMenu();
+    try {
+      const res = await (api as any)[method]('/menu', body);
+      if (res.status === 200 || res.status === 201) {
+        setIsSheetOpen(false);
+        fetchMenu();
+      }
+    } catch (err) {
+      console.error('Failed to save menu item', err);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this item?')) {
-      const res = await fetch(`/api/menu?id=${id}`, { method: 'DELETE' });
-      if (res.ok) fetchMenu();
+      try {
+        const res = await api.delete(`/menu?id=${id}`);
+        if (res.status === 200) fetchMenu();
+      } catch (err) {
+        console.error('Failed to delete menu item', err);
+      }
     }
   };
 

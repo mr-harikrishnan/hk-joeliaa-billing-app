@@ -18,6 +18,7 @@ import { useMenuStore } from '@/store/useMenuStore';
 import { useCartStore } from '@/store/useCartStore';
 import BottomSheet from '@/components/ui/BottomSheet';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
 
 export default function BillingPage() {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function BillingPage() {
     }
   }, [categories, activeCategory]);
 
-  const filteredItems = items
+  const filteredItems = (Array.isArray(items) ? items : [])
     .filter(item => {
       const matchesCategory = item.category === activeCategory;
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -93,17 +94,15 @@ export default function BillingPage() {
       grandTotal: getGrandTotal(),
     };
 
-    const res = await fetch('/api/bills', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(billData),
-    });
-
-    if (res.ok) {
-      const bill = await res.json();
-      resetCart();
-      router.push(`/bills/${bill._id}`);
-    } else {
+    try {
+      const res = await api.post('/bills', billData);
+      if (res.status === 201 || res.status === 200) {
+        const bill = res.data;
+        resetCart();
+        router.push(`/bill/${bill._id}`);
+      }
+    } catch (err) {
+      console.error('Failed to generate bill', err);
       alert('Failed to generate bill');
       setIsGenerating(false);
     }

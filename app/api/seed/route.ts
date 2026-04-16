@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import MenuItem from '@/models/MenuItem';
+import { withAuth } from '@/lib/jwt';
 
 const initialMenuItems = [
   { name: 'Traditional Laddu', category: 'Sweets', price: 450, unit: 'kg', available: true },
@@ -11,7 +12,7 @@ const initialMenuItems = [
   { name: 'Banana Chips', category: 'Snacks', price: 320, unit: 'kg', available: true },
 ];
 
-export async function GET() {
+export const GET = withAuth(async () => {
   try {
     await dbConnect();
     
@@ -27,4 +28,4 @@ export async function GET() {
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
+});

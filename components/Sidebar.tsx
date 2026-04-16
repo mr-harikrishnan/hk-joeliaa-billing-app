@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   UtensilsCrossed, 
@@ -13,7 +12,7 @@ import {
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { useEffect, useState } from 'react';
+import { authService } from '@/lib/auth-service';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -29,24 +28,19 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { status } = useSession();
+  const router = useRouter();
   const isAuthPage = pathname === '/login' || pathname === '/unauthorized';
   const isCustomerMode = searchParams.get('mode') === 'customer';
 
-  // Hide sidebar if in customer mode OR if we are on an auth page without a persistent token
-  // If we have a local token, we show the sidebar even if session is loading/expired (to avoid flickering)
-  const [hasToken, setHasToken] = useState(false);
-  
-  useEffect(() => {
-    setHasToken(!!localStorage.getItem('joeliaa_admin_token'));
-  }, []);
+  const isLoggedIn = authService.isTokenValid();
 
   if (isCustomerMode || isAuthPage) return null;
-  if (status !== 'authenticated') return null;
+  if (!isLoggedIn) return null;
 
-  const handleSignOut = async () => {
-    localStorage.removeItem('joeliaa_admin_token');
-    await signOut({ callbackUrl: '/login' });
+  const handleSignOut = () => {
+    authService.clearSession();
+    router.replace('/login');
+    router.refresh();
   };
 
   return (

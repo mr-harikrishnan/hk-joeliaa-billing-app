@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { LayoutDashboard, UtensilsCrossed, ReceiptText, ClipboardList } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { authService } from '@/lib/auth-service';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -22,18 +21,13 @@ const tabs = [
 export default function BottomNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { status } = useSession();
   const isCustomerMode = searchParams.get('mode') === 'customer';
   const isAuthPage = pathname === '/login' || pathname === '/unauthorized';
-
-  const [hasToken, setHasToken] = useState(false);
   
-  useEffect(() => {
-    setHasToken(!!localStorage.getItem('joeliaa_admin_token'));
-  }, []);
+  const isLoggedIn = authService.isTokenValid();
 
   if (isCustomerMode || isAuthPage) return null;
-  if (status !== 'authenticated') return null;
+  if (!isLoggedIn) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-slate-100 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)] md:hidden">

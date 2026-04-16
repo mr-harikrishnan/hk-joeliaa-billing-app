@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Suspense } from 'react';
-import { Providers } from '@/components/Providers';
-import { auth } from '@/auth';
+import RootGuard from '@/components/RootGuard';
 import DashboardShell from '@/components/DashboardShell';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -20,24 +19,21 @@ export const viewport = {
   userScalable: false,
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-  const isLoggedIn = !!session?.user;
-
   return (
     <html lang="en" className="h-full">
       <body className={`${inter.className} bg-[#f8fafc] antialiased overflow-x-hidden min-h-screen h-full`}>
-        <Providers>
-          <Suspense fallback={null}>
+        <Suspense fallback={null}>
+          <RootGuard>
             <DashboardShell>
               {children}
             </DashboardShell>
-          </Suspense>
-        </Providers>
+          </RootGuard>
+        </Suspense>
       </body>
     </html>
   );

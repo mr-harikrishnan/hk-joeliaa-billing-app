@@ -11,6 +11,7 @@ import {
   FileText
 } from 'lucide-react';
 import Link from 'next/link';
+import { api } from '@/lib/api';
 
 export default function OrdersPage() {
   const [bills, setBills] = useState<any[]>([]);
@@ -18,9 +19,11 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('/api/bills')
-      .then(res => res.json())
-      .then(setBills)
+    api.get('/bills')
+      .then(res => {
+        setBills(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(err => console.error('Failed to fetch bills', err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -62,10 +65,10 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBills.map((bill) => (
+          {(Array.isArray(filteredBills) ? filteredBills : []).map((bill) => (
             <Link 
               key={bill._id} 
-              href={`/bills/${bill._id}`}
+              href={`/bill/${bill._id}`}
               className="group block bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 hover:border-teal-300 hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300"
             >
               <div className="flex justify-between items-start mb-6">

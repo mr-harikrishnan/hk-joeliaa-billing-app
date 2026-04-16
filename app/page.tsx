@@ -20,19 +20,20 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import { api } from '@/lib/api';
 
 export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/analytics')
-      .then(res => res.json())
-      .then(setData)
+    api.get('/analytics')
+      .then(res => setData(res.data))
+      .catch(err => console.error('Failed to fetch analytics', err))
       .finally(() => setLoading(false));
       
     // Seed DB if empty (first run)
-    fetch('/api/seed');
+    api.get('/seed').catch(() => {});
   }, []);
 
   if (loading) {

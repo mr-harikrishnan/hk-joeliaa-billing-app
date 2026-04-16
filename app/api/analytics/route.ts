@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Bill from '@/models/Bill';
+import { withAuth } from '@/lib/jwt';
 
-export async function GET() {
+export const GET = withAuth(async () => {
   await dbConnect();
   
   const today = new Date();
@@ -36,4 +37,4 @@ export async function GET() {
     month: monthData[0] || { revenue: 0, count: 0 },
     chartData
   });
-}
+});

@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Lock, Mail, ArrowRight, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '@/lib/api';
+import { authService } from '@/lib/auth-service';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const isExpired = searchParams.get('expired') === 'true';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,32 +20,34 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (isExpired) {
+      setError('Your session has expired. Please login again.');
+    }
+  }, [isExpired]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const result = await signIn('credentials', {
+      const response = await api.post('/auth/login', {
         email,
         password,
-        redirect: false,
       });
 
-      if (result?.error) {
-        setError('Invalid credentials. Please try again.');
-        setLoading(false);
-      } else {
-        // Persist admin session state in local storage for auto-redirect and shell visibility
-        localStorage.setItem('joeliaa_admin_token', 'active_admin_session');
-        setSuccess(true);
-        setTimeout(() => {
-          router.push(callbackUrl);
-          router.refresh();
-        }, 800);
-      }
-    } catch {
-      setError('A technical error occurred. Please try again.');
+      const { token } = response.data;
+      
+      authService.setToken(token);
+      setSuccess(true);
+      
+      setTimeout(() => {
+        router.push(callbackUrl);
+        router.refresh();
+      }, 800);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Invalid credentials. Please try again.');
       setLoading(false);
     }
   };

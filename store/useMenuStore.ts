@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from '@/lib/api';
 
 interface MenuItem {
   _id: string;
@@ -36,15 +37,17 @@ export const useMenuStore = create<MenuState>((set) => ({
     set({ loading: true });
     try {
       const [itemsRes, catsRes] = await Promise.all([
-        fetch('/api/menu'),
-        fetch('/api/categories')
+        api.get('/menu'),
+        api.get('/categories')
       ]);
-      const items = await itemsRes.json();
-      const categories = await catsRes.json();
+      
+      const items = Array.isArray(itemsRes.data) ? itemsRes.data : [];
+      const categories = Array.isArray(catsRes.data) ? catsRes.data : [];
+      
       set({ items, categories, loading: false });
     } catch (error) {
       console.error('Failed to fetch menu', error);
-      set({ loading: false });
+      set({ items: [], categories: [], loading: false });
     }
   },
 }));

@@ -11,47 +11,38 @@ import {
   Image as ImageIcon,
   CheckCircle2,
   PhoneCall,
-  MapPin,
   Loader2,
   Receipt, 
-  Trash2, 
-  Save, 
   IndianRupee, 
-  ChevronLeft,
-  ChevronRight,
   RefreshCw,
   AlertCircle,
   History,
-  Printer
+  Printer,
+  ChevronRight
 } from 'lucide-react';
 import { generatePDF, exportToImage } from '@/utils/export';
+import { authService } from '@/lib/auth-service';
+import { api } from '@/lib/api';
 
-// Internal component that uses search params
 function BillDetailsContent() {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isCustomerMode = searchParams.get('mode')?.includes('customer');
-  const [isRevealed, setIsRevealed] = useState(false);
-  
   const [bill, setBill] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setFetchError] = useState(false);
+  
+  // Public check based on your spec
+  const isAdmin = authService.isTokenValid();
 
   const fetchBill = async () => {
     if (!id) return;
     setLoading(true);
     setFetchError(false);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
     try {
-      const res = await fetch(`/api/bills?id=${id}`, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setBill(data);
+      const res = await api.get(`/bills?id=${id}`);
+      setBill(res.data);
     } catch (err) {
       console.error('Fetch error:', err);
       setFetchError(true);
@@ -62,7 +53,11 @@ function BillDetailsContent() {
 
   useEffect(() => {
     fetchBill();
-  }, [id]);
+    // Register as public bill for lock logic in RootGuard if not admin
+    if (id && !isAdmin) {
+      authService.setPublicBillId(id as string);
+    }
+  }, [id, isAdmin]);
 
   if (loading) {
     return (
@@ -81,7 +76,7 @@ function BillDetailsContent() {
         </div>
         <div className="space-y-2">
            <h2 className="text-xl font-black text-slate-800 tracking-tight">Invoice Unavailable</h2>
-           <p className="text-slate-400 text-sm font-medium max-w-xs">{error ? "The connection timed out or a server error occurred." : "This bill does not exist or has been removed."}</p>
+           <p className="text-slate-400 text-sm font-medium max-w-xs">This bill does not exist or has been removed.</p>
         </div>
         <button 
           onClick={fetchBill}
@@ -94,12 +89,10 @@ function BillDetailsContent() {
     );
   }
 
-  if (!bill) return <div>Bill not found</div>;
-
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        const cleanUrl = `${window.location.origin}${window.location.pathname}?mode=customer`;
+        const cleanUrl = `${window.location.origin}/bill/${id}`;
         await navigator.share({
           title: `Bill for ${bill.customerName}`,
           text: `Invoice Total: ₹${bill.grandTotal}`,
@@ -113,44 +106,10 @@ function BillDetailsContent() {
     }
   };
 
-  if (isCustomerMode && !isRevealed) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center p-6">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-sm bg-white rounded-[64px] p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.08)] border border-slate-50 text-center space-y-10"
-        >
-          <div className="flex flex-col items-center">
-             <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-xl mb-6 bg-slate-50 p-0.5">
-               <Image src="/JOELIAA.png" alt="JOELIAA" width={80} height={80} className="object-cover rounded-[22px]" />
-             </div>
-             <h2 className="text-2xl font-black text-slate-800 tracking-tighter">Your Invoice is Ready</h2>
-             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Secure Link • Joeliaa Store</p>
-          </div>
-
-          <div className="flex justify-center">
-            <div className="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center border border-teal-100">
-               <Receipt className="text-teal-600" size={32} />
-            </div>
-          </div>
-
-          <button 
-            onClick={() => setIsRevealed(true)}
-            className="w-full py-6 bg-slate-900 text-white rounded-[32px] font-black shadow-2xl hover:bg-slate-800 hover:translate-y-[-2px] active:scale-95 transition-all text-lg"
-          >
-            Review Official Invoice
-          </button>
-
-          <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Authorized Access Only</p>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`max-w-4xl mx-auto space-y-8 pb-20 px-4 sm:px-0 ${isCustomerMode ? 'pt-10' : ''}`}>
-      {!isCustomerMode && (
+    <div className={`max-w-4xl mx-auto space-y-8 pb-20 px-4 sm:px-0 mt-8`}>
+      {/* Header (Admin View Only) */}
+      {isAdmin && (
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button 
@@ -169,20 +128,18 @@ function BillDetailsContent() {
             className="hidden sm:flex items-center space-x-2 px-6 py-3 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all text-xs"
           >
             <History size={16} />
-            <span>View All Orders</span>
+            <span>All Sales</span>
           </button>
         </div>
       )}
 
-      <div className={`grid grid-cols-1 gap-8 items-start ${isCustomerMode ? '' : 'lg:grid-cols-3'}`}>
-        {/* Actual Bill UI (The part that will be exported as image) */}
-        <div className={`${isCustomerMode ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
+      {/* Main Bill */}
+      <div className={`grid grid-cols-1 gap-8 items-start ${!isAdmin ? '' : 'lg:grid-cols-3'}`}>
+        <div className={`${!isAdmin ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
           <div id="bill-invoice" className="bg-white rounded-[48px] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
-            {/* Professional Accent Strip (Inspired by Gujarat Freight Tools) */}
             <div className="h-4 bg-teal-600 w-full" />
             
             <div className="p-10 sm:p-14 space-y-10">
-              {/* Business Header */}
               <div className="flex flex-col sm:flex-row items-start justify-between space-y-6 sm:space-y-0 text-center sm:text-left">
                 <div className="w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
                   <h3 className="text-4xl font-black text-teal-600 tracking-tighter leading-none mb-2">
@@ -196,7 +153,6 @@ function BillDetailsContent() {
 
               <div className="h-px bg-gray-100 w-full" />
               
-              {/* Bill Info Grid */}
               <div className="grid grid-cols-2 gap-0 border border-slate-200">
                 <div className="p-4 border-r border-slate-200">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Customer Details</p>
@@ -221,7 +177,6 @@ function BillDetailsContent() {
                 </div>
               </div>
 
-              {/* Structured Items Table */}
               <div className="border-x border-t border-slate-200 overflow-hidden">
                 <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 text-[9px] font-black text-slate-500 uppercase tracking-widest text-center py-2">
                   <div className="col-span-1 border-r border-slate-200">Sl</div>
@@ -241,51 +196,29 @@ function BillDetailsContent() {
                     </div>
                   ))}
                 </div>
-                {/* Totals Section in Table */}
                 <div className="grid grid-cols-12 border-t-2 border-slate-200 bg-slate-50 py-3 text-right pr-4">
-                  <div className="col-span-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    Subtotal Amount :
-                  </div>
-                  <div className="col-span-2 text-sm font-black text-slate-900">
-                    ₹{bill.subtotal}.00
-                  </div>
+                  <div className="col-span-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">Subtotal Amount :</div>
+                  <div className="col-span-2 text-sm font-black text-slate-900">₹{bill.subtotal}.00</div>
                 </div>
                 <div className="grid grid-cols-12 bg-slate-50 py-2 border-t border-slate-100 text-right pr-4">
-                  <div className="col-span-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    Delivery Charges :
-                  </div>
-                  <div className="col-span-2 text-sm font-black text-slate-900 border-b border-slate-300">
-                    ₹{bill.deliveryCharge}.00
-                  </div>
+                  <div className="col-span-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">Delivery Charges :</div>
+                  <div className="col-span-2 text-sm font-black text-slate-900 border-b border-slate-300">₹{bill.deliveryCharge}.00</div>
                 </div>
                 <div className="grid grid-cols-12 bg-teal-50/50 py-4 text-right pr-4">
                   <div className="col-span-10 flex flex-col items-end pr-2 justify-center">
                     <span className="text-[11px] font-black text-teal-600 uppercase tracking-[0.2em] leading-none">Grand Total (Rounded)</span>
                     <span className="text-[9px] text-slate-400 font-bold italic mt-1 uppercase">Inclusive of all convenience fees</span>
                   </div>
-                  <div className="col-span-2 text-3xl font-black text-teal-600 tracking-tighter">
-                    ₹{bill.grandTotal}
-                  </div>
+                  <div className="col-span-2 text-3xl font-black text-teal-600 tracking-tighter">₹{bill.grandTotal}</div>
                 </div>
               </div>
 
-              {/* Simplified Footer with Thanks Note & Mobile */}
               <div className="pt-10 space-y-8">
                 <div className="text-center py-10 bg-teal-50/50 rounded-[40px] border border-dashed border-teal-100 relative overflow-hidden">
                   <p className="text-2xl font-black text-teal-600 relative z-10">
-                    {(() => {
-                      const notes = [
-                        "Thanks for your order! Enjoy your treats! 🧁",
-                        "We hope these snacks bring a smile to your face! ✨",
-                        "Made with love, just for you. Thank you! ❤️",
-                        "Your support means everything to us. Enjoy! 🍭",
-                        "Thanks for choosing Joeliaa! Have a sweet day! 🍬"
-                      ];
-                      return notes[Math.floor(Math.random() * notes.length)];
-                    })()}
+                    Enjoy your fresh homemade treats! 🧁
                   </p>
                   <p className="text-[10px] font-bold text-teal-400 uppercase tracking-[0.2em] mt-2">Homemade with quality ingredients</p>
-                  <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-teal-100 rounded-full opacity-30" />
                 </div>
 
                 <div className="flex flex-col items-center justify-center space-y-4 pt-4">
@@ -301,13 +234,13 @@ function BillDetailsContent() {
           </div>
         </div>
 
-        {/* Action Sidebar - Hidden in Customer Mode */}
-        {!isCustomerMode && (
+        {/* Action Sidebar (Admin View Only) */}
+        {isAdmin && (
           <div className="space-y-6">
             <div className="bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200 border border-slate-100 space-y-8">
               <div>
-                <h3 className="text-lg font-black text-slate-800 mb-2">Invoice Actions</h3>
-                <p className="text-xs text-slate-500 font-medium">Export this bill for your customer</p>
+                <h3 className="text-lg font-black text-slate-800 mb-2">Admin Panel</h3>
+                <p className="text-xs text-slate-500 font-medium">Manage this invoice record</p>
               </div>
 
               <div className="space-y-3">
@@ -328,20 +261,9 @@ function BillDetailsContent() {
                 >
                   <div className="flex items-center space-x-3">
                     <ImageIcon size={20} />
-                    <span>Save as Image</span>
+                    <span>Save Image</span>
                   </div>
                   <ChevronRight size={18} className="text-blue-300 group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                <button 
-                  onClick={() => window.print()}
-                  className="w-full flex items-center justify-between p-4 bg-slate-50 text-slate-700 rounded-2xl font-bold hover:bg-slate-100 transition-all group"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Printer size={20} />
-                    <span>Print Bill</span>
-                  </div>
-                  <ChevronRight size={18} className="text-slate-300 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
 
@@ -352,20 +274,19 @@ function BillDetailsContent() {
                 className="w-full py-5 bg-teal-600 text-white rounded-[24px] font-black shadow-xl shadow-teal-100 flex items-center justify-center space-x-3 hover:translate-y-[-2px] active:scale-95 transition-all"
               >
                 <Share2 size={24} />
-                <span>Share with Customer</span>
+                <span>Quick Share</span>
               </button>
             </div>
 
             <div className="bg-emerald-500 p-8 rounded-[40px] shadow-lg shadow-emerald-100 relative overflow-hidden">
               <div className="relative z-10 text-white">
                 <CheckCircle2 size={40} className="mb-4 opacity-40" />
-                <h3 className="text-xl font-black mb-1 leading-tight text-white">Need another bill?</h3>
-                <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest leading-relaxed">Instantly start a new checkout session</p>
+                <h3 className="text-xl font-black mb-1 leading-tight text-white">Another order?</h3>
                 <button 
                   onClick={() => router.push('/billing')}
                   className="mt-6 w-full py-4 bg-white text-emerald-600 rounded-2xl font-black shadow-lg hover:shadow-xl transition-all active:scale-95"
                 >
-                  Start New Billing
+                  Start New Bill
                 </button>
               </div>
               <Receipt className="absolute -right-6 -bottom-6 text-white opacity-10" size={140} />
@@ -377,8 +298,7 @@ function BillDetailsContent() {
   );
 }
 
-// Main Page Component with Suspense
-export default function BillDetails() {
+export default function BillPage() {
   return (
     <Suspense fallback={
       <div className="flex h-[80vh] items-center justify-center">
