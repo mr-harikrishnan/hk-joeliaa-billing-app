@@ -41,8 +41,8 @@ export default function Sidebar() {
     setHasToken(!!localStorage.getItem('joeliaa_admin_token'));
   }, []);
 
-  if (isCustomerMode || (isAuthPage && !hasToken)) return null;
-  if (status !== 'authenticated' && !hasToken) return null;
+  if (isCustomerMode || isAuthPage) return null;
+  if (status !== 'authenticated') return null;
 
   const handleSignOut = async () => {
     localStorage.removeItem('joeliaa_admin_token');

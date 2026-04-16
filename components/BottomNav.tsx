@@ -32,8 +32,8 @@ export default function BottomNav() {
     setHasToken(!!localStorage.getItem('joeliaa_admin_token'));
   }, []);
 
-  if (isCustomerMode || (isAuthPage && !hasToken)) return null;
-  if (status !== 'authenticated' && !hasToken) return null;
+  if (isCustomerMode || isAuthPage) return null;
+  if (status !== 'authenticated') return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-slate-100 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)] md:hidden">
