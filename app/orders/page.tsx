@@ -133,47 +133,51 @@ export default function OrdersPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
                     {dateBills.map((bill: any) => (
                       <Link 
                         key={bill._id} 
                         href={`/bill/${bill._id}`}
-                        className="group block bg-white p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] shadow-sm border border-slate-100 hover:border-teal-300 hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300"
+                        className="group block bg-white p-5 sm:p-6 rounded-[32px] shadow-sm border border-slate-100 hover:border-teal-300 hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300"
                       >
-                        <div className="flex justify-between items-start mb-6">
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                            <div className="relative">
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 p-2.5 sm:p-3 bg-teal-50 text-teal-600 rounded-xl sm:rounded-2xl group-hover:bg-teal-600 group-hover:text-white transition-colors duration-300 shrink-0">
-                                <User className="w-full h-full" />
-                              </div>
-                              {bill.orderNumber && (
-                                <div className="absolute -top-1.5 -right-1.5 bg-teal-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-lg shadow-sm border border-white">
-                                  #{bill.orderNumber}
+                        <div className="flex flex-col space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center space-x-3 min-w-0">
+                                <div className="relative shrink-0">
+                                  <div className="w-10 h-10 sm:w-12 sm:h-12 p-2.5 sm:p-3 bg-teal-50 text-teal-600 rounded-xl sm:rounded-2xl group-hover:bg-teal-600 group-hover:text-white transition-colors duration-300">
+                                    <User className="w-full h-full" />
+                                  </div>
+                                  {bill.orderNumber && (
+                                    <div className="absolute -top-1.5 -right-1.5 bg-teal-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-lg shadow-sm border border-white">
+                                      #{bill.orderNumber}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
+                                <div className="min-w-0">
+                                  <h3 className="font-black text-slate-800 text-xs sm:text-sm group-hover:text-teal-700 transition-colors uppercase tracking-tight truncate pr-1">
+                                    {bill.customerName}
+                                  </h3>
+                                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest truncate">
+                                    INV-{bill._id.substring(bill._id.length - 4).toUpperCase()}
+                                  </p>
+                                </div>
                             </div>
-                            <div className="min-w-0">
-                              <h3 className="font-bold text-slate-800 text-[11px] sm:text-sm leading-none group-hover:text-teal-700 transition-colors uppercase tracking-tight truncate">{bill.customerName}</h3>
-                              <p className="text-[9px] text-slate-400 font-bold uppercase mt-1.5 sm:mt-2 tracking-widest truncate">
-                                INV-{bill._id.substring(bill._id.length - 4).toUpperCase()}
-                              </p>
+                            <div className="shrink-0 text-right ml-2">
+                              <p className="text-base sm:text-xl font-black text-slate-900 tracking-tighter">₹{bill.grandTotal}</p>
                             </div>
                           </div>
-                          <div className="text-left sm:text-right mt-2 sm:mt-0">
-                            <p className="text-lg sm:text-xl font-black text-slate-900 tracking-tighter">₹{bill.grandTotal}</p>
-                          </div>
-                        </div>
 
-                        <div className="h-px bg-slate-50 w-full mb-4" />
+                          <div className="h-px bg-slate-50 w-full" />
 
-                        <div className="flex items-center justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                          <div className="flex items-center space-x-1.5">
-                            <Calendar size={12} className="text-teal-500 sm:w-3.5 sm:h-3.5" />
-                            <span>{new Date(bill.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                          </div>
-                          <div className="flex items-center justify-between space-x-1 py-1 px-2 sm:px-3 bg-slate-50 rounded-lg group-hover:bg-teal-50 group-hover:text-teal-700 transition-all">
-                            <span>{bill.items.length} items</span>
-                            <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform sm:w-3.5 sm:h-3.5" />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-1.5 text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">
+                              <Calendar size={12} className="text-teal-500" />
+                              <span>{new Date(bill.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <div className="flex items-center space-x-1 py-1 px-3 bg-slate-50 rounded-xl group-hover:bg-teal-50 group-hover:text-teal-700 transition-all text-[9px] sm:text-[10px] font-black uppercase text-slate-500">
+                              <span>{bill.items.length} Items</span>
+                              <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
+                            </div>
                           </div>
                         </div>
                       </Link>
