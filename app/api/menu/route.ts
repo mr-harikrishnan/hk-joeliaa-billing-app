@@ -32,6 +32,20 @@ export const DELETE = withAuth(async (req: Request) => {
   await dbConnect();
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
-  await MenuItem.findByIdAndDelete(id);
-  return NextResponse.json({ message: 'Deleted successfully' });
+  
+  console.log('🗑️ Attempting to delete MenuItem ID:', id);
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
+  const deletedItem = await MenuItem.findByIdAndDelete(id);
+  
+  if (!deletedItem) {
+    console.warn('⚠️ MenuItem not found for deletion:', id);
+    return NextResponse.json({ error: 'MenuItem not found' }, { status: 404 });
+  }
+
+  console.log('✅ Successfully deleted MenuItem:', id);
+  return NextResponse.json({ message: 'Deleted successfully', id });
 });

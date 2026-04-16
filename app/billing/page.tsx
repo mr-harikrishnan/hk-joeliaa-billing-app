@@ -37,7 +37,7 @@ export default function BillingPage() {
     resetCart
   } = useCartStore();
 
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null); // This will now store category ID
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isQtySheetOpen, setIsQtySheetOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -49,7 +49,7 @@ export default function BillingPage() {
 
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
-      setActiveCategory(categories[0].name);
+      setActiveCategory(categories[0]._id);
     }
   }, [categories, activeCategory]);
 
@@ -145,10 +145,10 @@ export default function BillingPage() {
                 {categories.map((cat) => (
                   <button
                     key={cat._id}
-                    onClick={() => setActiveCategory(cat.name)}
+                    onClick={() => setActiveCategory(cat._id)}
                     className={`
                       whitespace-nowrap px-6 py-2.5 rounded-xl text-xs font-bold transition-all
-                      ${activeCategory === cat.name 
+                      ${activeCategory === cat._id 
                         ? 'bg-teal-600 text-white shadow-md' 
                         : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}
                     `}

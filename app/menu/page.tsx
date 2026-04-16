@@ -17,17 +17,19 @@ import { api } from '@/lib/api';
 
 export default function MenuPage() {
   const { items, categories, fetchMenu, loading } = useMenuStore();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null); // This will now store category ID
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Form State
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     price: '',
     category: '',
+    newCategoryName: '', // For inline creation
   });
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function MenuPage() {
 
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
-      setActiveCategory(categories[0].name);
+      setActiveCategory(categories[0]._id);
     }
   }, [categories, activeCategory]);
 
@@ -50,41 +52,101 @@ export default function MenuPage() {
 
   const handleOpenAdd = () => {
     setEditingItem(null);
-    setFormData({ name: '', price: '', category: activeCategory || '' });
+    setFormData({ 
+      name: '', 
+      price: '', 
+      category: activeCategory || '',
+      newCategoryName: ''
+    });
     setIsSheetOpen(true);
   };
 
   const handleOpenEdit = (item: any) => {
     setEditingItem(item);
-    setFormData({ name: item.name, price: item.price.toString(), category: item.category });
+    setFormData({ 
+      name: item.name, 
+      price: item.price.toString(), 
+      category: typeof item.category === 'string' ? item.category : item.category?._id || '',
+      newCategoryName: ''
+    });
     setIsSheetOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const method = editingItem ? 'put' : 'post';
-    const body = editingItem 
-      ? { ...formData, _id: editingItem._id, price: Number(formData.price) }
-      : { ...formData, price: Number(formData.price) };
+    setIsSaving(true);
 
     try {
+      let categoryId = formData.category;
+
+      // Handle New Category Creation
+      if (formData.category === 'new') {
+        if (!formData.newCategoryName.trim()) {
+          alert('Please enter a category name');
+          setIsSaving(false);
+          return;
+        }
+        
+        const catRes = await api.post('/categories', { 
+          name: formData.newCategoryName,
+          order: categories.length + 1 
+        });
+        
+        if (catRes.status === 201 || catRes.status === 200) {
+          categoryId = catRes.data._id;
+        } else {
+          throw new Error('Failed to create category');
+        }
+      }
+
+      const method = editingItem ? 'put' : 'post';
+      const body = editingItem 
+        ? { 
+            _id: editingItem._id, 
+            name: formData.name,
+            price: Number(formData.price),
+            category: categoryId 
+          }
+        : { 
+            name: formData.name,
+            price: Number(formData.price),
+            category: categoryId 
+          };
+
       const res = await (api as any)[method]('/menu', body);
       if (res.status === 200 || res.status === 201) {
         setIsSheetOpen(false);
-        fetchMenu();
+        await fetchMenu(); // Refresh both items and categories
+        
+        // If it was a new category, make it active
+        if (formData.category === 'new') {
+          setActiveCategory(categoryId);
+        }
       }
     } catch (err) {
       console.error('Failed to save menu item', err);
+      alert('Error saving product. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this item?')) {
       try {
+        console.log('📡 Sending delete request for ID:', id);
         const res = await api.delete(`/menu?id=${id}`);
-        if (res.status === 200) fetchMenu();
+        
+        if (res.status === 200 || res.status === 204) {
+          console.log('✅ Delete successful, refreshing menu...');
+          await fetchMenu();
+        } else {
+          console.error('❌ Delete failed with status:', res.status);
+          alert('Could not delete item. Status: ' + res.status);
+        }
       } catch (err) {
-        console.error('Failed to delete menu item', err);
+        console.error('💥 Failed to delete menu item:', err);
+        alert('Failed to delete menu item. Check console for details.');
       }
     }
   };
@@ -142,10 +204,10 @@ export default function MenuPage() {
           {categories.map((cat) => (
             <button
               key={cat._id}
-              onClick={() => setActiveCategory(cat.name)}
+              onClick={() => setActiveCategory(cat._id)}
               className={`
                 whitespace-nowrap px-8 py-3.5 rounded-2xl text-sm font-bold transition-all border
-                ${activeCategory === cat.name 
+                ${activeCategory === cat._id 
                   ? 'bg-teal-600 text-white border-teal-600 shadow-md translate-y-[-2px]' 
                   : 'bg-white text-slate-500 border-slate-100 hover:border-teal-200'}
               `}
@@ -254,20 +316,40 @@ export default function MenuPage() {
               <label className="text-xs font-bold text-slate-400 uppercase ml-1 tracking-widest">Category</label>
               <select 
                 required
-                className="w-full bg-slate-50 border-none rounded-2xl py-4 px-5 text-sm focus:ring-2 focus:ring-teal-200 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m3%205%203%203%203-3%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_1.25rem_center] bg-no-repeat"
+                className="w-full bg-slate-50 border-none rounded-2xl py-4 px-5 text-sm focus:ring-2 focus:ring-teal-200 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m3%205%203%203%203-3%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_1.25rem_center] bg-no-repeat transition-all"
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
               >
+                <option value="" disabled>Select Category</option>
                 {categories.map(c => (
-                  <option key={c._id} value={c.name}>{c.name}</option>
+                  <option key={c._id} value={c._id}>{c.name}</option>
                 ))}
+                {!editingItem && <option value="new" className="text-teal-600 font-bold">New Category...</option>}
               </select>
             </div>
           </div>
+
+          {/* Inline New Category Input */}
+          {formData.category === 'new' && (
+            <div className="space-y-2 animate-in slide-in-from-top-2">
+              <label className="text-xs font-bold text-teal-600 uppercase ml-1 tracking-widest">New Category Name</label>
+              <input 
+                required
+                className="w-full bg-teal-50 border-2 border-teal-100 rounded-2xl py-4 px-5 text-sm focus:ring-2 focus:ring-teal-200"
+                placeholder="e.g. Seasonal Specials"
+                value={formData.newCategoryName}
+                onChange={(e) => setFormData({...formData, newCategoryName: e.target.value})}
+                autoFocus
+              />
+            </div>
+          )}
+
           <button 
             type="submit"
-            className="w-full bg-teal-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-teal-100 hover:bg-teal-700 active:scale-[0.98] transition-all mt-4"
+            disabled={isSaving}
+            className="w-full bg-teal-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-teal-100 hover:bg-teal-700 active:scale-[0.98] transition-all mt-4 flex items-center justify-center disabled:opacity-70"
           >
+            {isSaving ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
             {editingItem ? 'Save Changes' : 'Confirm & Add'}
           </button>
         </form>

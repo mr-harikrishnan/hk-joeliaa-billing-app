@@ -1,7 +1,7 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 
 export interface IMenuItem {
-  category: string;
+  category: mongoose.Types.ObjectId;
   name: string;
   price: number;
   unit?: string;
@@ -11,7 +11,7 @@ export interface IMenuItem {
 
 const MenuItemSchema = new Schema<IMenuItem>(
   {
-    category: { type: String, required: true },
+    category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     name: { type: String, required: true },
     price: { type: Number, required: true },
     unit: { type: String, default: 'pcs' },
