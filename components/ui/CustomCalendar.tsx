@@ -82,7 +82,7 @@ export default function CustomCalendar({ selectedDate, onSelect, maxDate }: Cust
           </button>
           <button 
             onClick={handleNextMonth}
-            disabled={maxDate && new Date(viewYear, viewMonth + 1, 1) > new Date(maxDate)}
+            disabled={!!(maxDate && new Date(viewYear, viewMonth + 1, 1) > new Date(maxDate))}
             className="p-2 hover:bg-slate-50 text-slate-400 hover:text-teal-600 rounded-xl transition-all disabled:opacity-20 disabled:hover:bg-transparent"
           >
             <ChevronRight size={18} />
