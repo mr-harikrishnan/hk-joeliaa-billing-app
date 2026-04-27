@@ -6,10 +6,14 @@ import { authService } from "@/lib/auth-service";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
+// Global flag to track if the initial session check has been completed
+// This prevents the full-screen loader from showing on every client-side navigation
+let isInitialCheckDone = false;
+
 export default function RootGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(!isInitialCheckDone);
 
   useEffect(() => {
     const runChecks = () => {
@@ -51,6 +55,7 @@ export default function RootGuard({ children }: { children: React.ReactNode }) {
       }
 
       setIsChecking(false);
+      isInitialCheckDone = true;
     };
 
     runChecks();

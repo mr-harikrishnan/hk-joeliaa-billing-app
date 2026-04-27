@@ -23,7 +23,7 @@ interface MenuState {
   setItems: (items: MenuItem[]) => void;
   setCategories: (categories: Category[]) => void;
   setLoading: (loading: boolean) => void;
-  fetchMenu: () => Promise<void>;
+  fetchMenu: (force?: boolean) => Promise<void>;
 }
 
 export const useMenuStore = create<MenuState>((set) => ({
@@ -33,7 +33,10 @@ export const useMenuStore = create<MenuState>((set) => ({
   setItems: (items) => set({ items }),
   setCategories: (categories) => set({ categories }),
   setLoading: (loading) => set({ loading }),
-  fetchMenu: async () => {
+  fetchMenu: async (force = false) => {
+    const { items, categories } = useMenuStore.getState();
+    if (!force && items.length > 0 && categories.length > 0) return;
+
     set({ loading: true });
     try {
       const [itemsRes, catsRes] = await Promise.all([
