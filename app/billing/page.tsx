@@ -14,13 +14,15 @@ import {
   Trash2,
   Package,
   Smartphone,
-  Banknote
+  Banknote,
+  Calendar
 } from 'lucide-react';
 import { useMenuStore } from '@/store/useMenuStore';
 import { useCartStore } from '@/store/useCartStore';
 import BottomSheet from '@/components/ui/BottomSheet';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import CustomCalendar from '@/components/ui/CustomCalendar';
 
 export default function BillingPage() {
   const router = useRouter();
@@ -54,6 +56,16 @@ export default function BillingPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCartMobileOpen, setIsCartMobileOpen] = useState(false);
+  const [billDateType, setBillDateType] = useState<'today' | 'old'>('today');
+  
+  // Helper to get local YYYY-MM-DD
+  const getLocalToday = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  const todayStr = getLocalToday();
+  const [billDate, setBillDate] = useState(todayStr);
 
   useEffect(() => {
     fetchMenu();
@@ -105,7 +117,8 @@ export default function BillingPage() {
       amountReceived: paymentMethod === 'cash' ? amountReceived : 0,
       changeReturned: paymentMethod === 'cash' ? changeToReturn : 0,
       grandTotal: getGrandTotal(),
-      status: 'paid'
+      status: 'paid',
+      createdAt: billDateType === 'old' ? new Date(billDate) : new Date()
     };
 
     try {
@@ -244,6 +257,42 @@ export default function BillingPage() {
                     onChange={(e) => setCustomerName(e.target.value)}
                   />
                 </div>
+              </div>
+
+              {/* Bill Date Type Selection */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Bill Date</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button 
+                    onClick={() => setBillDateType('today')}
+                    className={`py-2 rounded-xl text-[10px] font-bold border-2 transition-all ${
+                      billDateType === 'today' 
+                        ? 'bg-teal-50 border-teal-600 text-teal-700' 
+                        : 'bg-white border-slate-100 text-slate-400'
+                    }`}
+                  >
+                    Today Bill
+                  </button>
+                  <button 
+                    onClick={() => setBillDateType('old')}
+                    className={`py-2 rounded-xl text-[10px] font-bold border-2 transition-all ${
+                      billDateType === 'old' 
+                        ? 'bg-teal-50 border-teal-600 text-teal-700' 
+                        : 'bg-white border-slate-100 text-slate-400'
+                    }`}
+                  >
+                    Old Bill
+                  </button>
+                </div>
+                {billDateType === 'old' && (
+                  <div className="mt-4">
+                    <CustomCalendar 
+                      selectedDate={billDate}
+                      onSelect={(date) => setBillDate(date)}
+                      maxDate={todayStr}
+                    />
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="space-y-1.5">
@@ -466,6 +515,41 @@ export default function BillingPage() {
                   onChange={(e) => setCustomerName(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Bill Date</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => setBillDateType('today')}
+                  className={`py-1.5 rounded-xl text-[9px] font-bold border-2 transition-all ${
+                    billDateType === 'today' 
+                      ? 'bg-teal-50 border-teal-600 text-teal-700' 
+                      : 'bg-white border-slate-100 text-slate-400'
+                  }`}
+                >
+                  TODAY
+                </button>
+                <button 
+                  onClick={() => setBillDateType('old')}
+                  className={`py-1.5 rounded-xl text-[9px] font-bold border-2 transition-all ${
+                    billDateType === 'old' 
+                      ? 'bg-teal-50 border-teal-600 text-teal-700' 
+                      : 'bg-white border-slate-100 text-slate-400'
+                  }`}
+                >
+                  OLD BILL
+                </button>
+              </div>
+              {billDateType === 'old' && (
+                <div className="mt-3">
+                  <CustomCalendar 
+                    selectedDate={billDate}
+                    onSelect={(date) => setBillDate(date)}
+                    maxDate={todayStr}
+                  />
+                </div>
+              )}
             </div>
             <div className="space-y-4 mb-6">
               <div className="grid grid-cols-2 gap-3">

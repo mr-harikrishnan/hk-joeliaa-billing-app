@@ -10,7 +10,8 @@ import {
   User,
   Calendar,
   Loader2,
-  FileText
+  FileText,
+  Trash2
 } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
@@ -22,6 +23,11 @@ export default function OrdersPage() {
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    fetchBills();
+  }, []);
+
+  const fetchBills = () => {
+    setLoading(true);
     api.get('/bills')
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : [];
@@ -29,7 +35,22 @@ export default function OrdersPage() {
       })
       .catch(err => console.error('Failed to fetch bills', err))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  const handleDeleteBill = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (confirm('Are you sure you want to delete this bill?')) {
+      try {
+        await api.delete(`/bills/${id}`);
+        setBills(prev => prev.filter(b => b._id !== id));
+      } catch (err) {
+        console.error('Failed to delete bill', err);
+        alert('Failed to delete bill');
+      }
+    }
+  };
 
   const filteredBills = bills.filter((bill: any) => 
     bill.customerName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -147,8 +168,14 @@ export default function OrdersPage() {
                                 </div>
                               )}
                             </div>
-                            <div className="shrink-0 text-right">
+                            <div className="shrink-0 text-right flex flex-col items-end">
                               <p className="text-sm sm:text-lg font-black text-slate-900 tracking-tighter">₹{bill.grandTotal}</p>
+                              <button 
+                                onClick={(e) => handleDeleteBill(e, bill._id)}
+                                className="mt-1 p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                              >
+                                <Trash2 size={14} />
+                              </button>
                             </div>
                           </div>
 

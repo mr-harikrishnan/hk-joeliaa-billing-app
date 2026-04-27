@@ -50,6 +50,7 @@ function LoginForm() {
       const { token } = response.data;
 
       authService.setToken(token);
+      authService.setIsAdmin(true);
       setSuccess(true);
 
       setTimeout(() => {

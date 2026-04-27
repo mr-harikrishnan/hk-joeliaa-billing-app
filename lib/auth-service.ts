@@ -2,6 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 
 export const TOKEN_KEY = 'joeliaa_auth_token';
 export const PUBLIC_BILL_KEY = 'joeliaa_public_bill_id';
+export const ADMIN_KEY = 'joeliaa_is_admin';
 
 export const authService = {
   getToken: () => {
@@ -19,6 +20,7 @@ export const authService = {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(PUBLIC_BILL_KEY);
+      localStorage.removeItem(ADMIN_KEY);
     }
   },
 
@@ -65,5 +67,17 @@ export const authService = {
 
   isPublicBillMode: () => {
     return !!authService.getPublicBillId();
+  },
+
+  setIsAdmin: (value: boolean) => {
+    if (typeof window !== 'undefined') {
+      if (value) localStorage.setItem(ADMIN_KEY, 'true');
+      else localStorage.removeItem(ADMIN_KEY);
+    }
+  },
+
+  isAdmin: () => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(ADMIN_KEY) === 'true';
   }
 };

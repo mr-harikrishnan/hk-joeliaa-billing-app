@@ -13,51 +13,40 @@ export default function RootGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const runChecks = () => {
+      const isAdminKey = authService.isAdmin();
       const isTokenValid = authService.isTokenValid();
       const isTokenExpired = authService.isTokenExpired();
-      const hasToken = !!authService.getToken();
-      const isBillRoute = pathname.startsWith("/bill/");
+      
       const isLoginRoute = pathname === "/login";
+      const isBillRoute = pathname.startsWith("/bill/");
+      
+      // Protected routes: everything except /login and /bill/[id]
+      const isProtectedRoute = !isLoginRoute && !isBillRoute;
 
-      // 1. PUBLIC BILL LOCK MODE
-      if (isBillRoute) {
-        // We are on a bill specific route. Enter lock mode.
-        const billId = pathname.split("/bill/")[1];
-        if (billId) {
-          authService.setPublicBillId(billId);
+      // 1. If isAdmin key exists, check JWT
+      if (isAdminKey) {
+        if (isTokenValid && !isTokenExpired) {
+          // Token is valid
+          if (isLoginRoute) {
+            router.replace("/");
+            return;
+          }
+        } else {
+          // Token is missing or invalid/expired
+          authService.clearSession(); // Clears token AND isAdmin key
+          if (!isLoginRoute) {
+            router.replace("/login?expired=true");
+            return;
+          }
         }
-        setIsChecking(false);
-        return;
-      }
-
-      // If user tries to escape public bill mode
-      const publicBillId = authService.getPublicBillId();
-      if (publicBillId && !isBillRoute && !isLoginRoute && !hasToken) {
-        // Enforce lock mode!
-        router.replace(`/bill/${publicBillId}`);
-        return;
-      }
-
-      // 2. AUTHENTICATION CHECKS
-      if (!isTokenValid || isTokenExpired) {
-        // Missing, expired, or invalid token
-        authService.clearSession(); // Ensure strict cleanup
-        if (!isLoginRoute) {
-          // If we had a token but it's invalid/expired, show expired message
-          const suffix = hasToken ? "?expired=true" : "";
-          router.replace(`/login${suffix}`);
+      } 
+      // 2. If isAdmin key is NOT there
+      else {
+        if (isProtectedRoute) {
+          // If trying to access dashboard, orders, etc without key
+          // Behave naturally: redirect to login or show 404 (we use redirect to login for protected pages)
+          router.replace("/login");
           return;
-        }
-      } else {
-        // Valid token
-        if (isLoginRoute) {
-          // Logged in trying to access login page
-          router.replace("/");
-          return;
-        }
-        // Admin access, clear any bill locks if they navigate elsewhere validly holding a token
-        if (publicBillId) {
-          localStorage.removeItem("joeliaa_public_bill_id");
         }
       }
 
