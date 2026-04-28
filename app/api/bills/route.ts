@@ -28,7 +28,27 @@ export const POST = withAuth(async (req: Request) => {
   try {
     await dbConnect();
     const data = await req.json();
-    const bill = await Bill.create(data);
+    
+    // Ensure data integrity by recalculating totals on the server
+    const items = data.items.map((item: any) => ({
+      ...item,
+      total: Number(item.price) * Number(item.quantity)
+    }));
+
+    const subtotal = items.reduce((sum: number, item: any) => sum + item.total, 0);
+    const deliveryCharge = Number(data.deliveryCharge) || 0;
+    const discount = Number(data.discount) || 0;
+    const grandTotal = subtotal + deliveryCharge - discount;
+
+    const bill = await Bill.create({
+      ...data,
+      items,
+      subtotal,
+      grandTotal,
+      deliveryCharge,
+      discount
+    });
+
     return NextResponse.json(bill, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
