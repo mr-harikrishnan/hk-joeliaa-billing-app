@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { authService } from "@/lib/auth-service";
+import { toast } from "@/store/useToastStore";
 
 function LoginForm() {
   const router = useRouter();
@@ -28,6 +29,8 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -36,10 +39,50 @@ function LoginForm() {
     }
   }, [isExpired]);
 
+  const validateEmail = (val: string) => {
+    if (!val) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(val)) return "Please enter a valid email address";
+    return null;
+  };
+
+  const validatePassword = (val: string) => {
+    if (!val) return "Password is required";
+    if (val.length < 6) return "Minimum 6 characters required";
+    const hasUpper = /[A-Z]/.test(val);
+    const hasLower = /[a-z]/.test(val);
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+    if (!hasUpper || !hasLower || !hasSymbol) {
+      return "Use 1 UPPERCASE, 1 lowercase & 1 symbol";
+    }
+    return null;
+  };
+
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    setEmailError(validateEmail(val));
+  };
+
+  const handlePasswordChange = (val: string) => {
+    setPassword(val);
+    setPasswordError(validatePassword(val));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const eErr = validateEmail(email);
+    const pErr = validatePassword(password);
+    
+    if (eErr || pErr) {
+      setEmailError(eErr);
+      setPasswordError(pErr);
+      toast.error("Please fix the validation errors");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await api.post("/auth/login", {
@@ -52,15 +95,16 @@ function LoginForm() {
       authService.setToken(token);
       authService.setIsAdmin(true);
       setSuccess(true);
+      toast.success("Login successful! Redirecting...");
 
       setTimeout(() => {
         router.push(callbackUrl);
         router.refresh();
       }, 800);
     } catch (err: any) {
-      setError(
-        err.response?.data?.error || "Invalid credentials. Please try again.",
-      );
+      const errorMsg = err.response?.data?.error || "Login failed. Please check your connection.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       setLoading(false);
     }
   };
@@ -244,10 +288,15 @@ function LoginForm() {
                   required
                   placeholder="admin@joeliaa.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-14 pl-14 pr-6 bg-white border border-slate-200 rounded-[24px] text-slate-900 text-sm font-bold placeholder-slate-200 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all shadow-sm"
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  className={`w-full h-14 pl-14 pr-6 bg-white border rounded-[24px] text-slate-900 text-sm font-bold placeholder-slate-200 focus:outline-none focus:ring-4 transition-all shadow-sm ${emailError ? 'border-red-500 focus:ring-red-500/10' : 'border-slate-200 focus:ring-emerald-500/10 focus:border-emerald-500'}`}
                 />
               </div>
+              {emailError && (
+                <p className="text-[10px] text-red-500 font-bold ml-4 mt-1 animate-in fade-in slide-in-from-top-1">
+                  {emailError}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -264,8 +313,8 @@ function LoginForm() {
                   required
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-14 pl-14 pr-14 bg-white border border-slate-200 rounded-[24px] text-slate-900 text-sm font-bold placeholder-slate-200 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all shadow-sm"
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  className={`w-full h-14 pl-14 pr-14 bg-white border rounded-[24px] text-slate-900 text-sm font-bold placeholder-slate-200 focus:outline-none focus:ring-4 transition-all shadow-sm ${passwordError ? 'border-red-500 focus:ring-red-500/10' : 'border-slate-200 focus:ring-emerald-500/10 focus:border-emerald-500'}`}
                 />
                 <button
                   type="button"
@@ -285,6 +334,11 @@ function LoginForm() {
                   </AnimatePresence>
                 </button>
               </div>
+              {passwordError && (
+                <p className="text-[10px] text-red-500 font-bold ml-4 mt-1 animate-in fade-in slide-in-from-top-1">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             <div className="pt-2">
