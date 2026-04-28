@@ -23,6 +23,8 @@ import BottomSheet from '@/components/ui/BottomSheet';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import CustomCalendar from '@/components/ui/CustomCalendar';
+import PageHeader from '@/components/ui/PageHeader';
+import RefreshButton from '@/components/ui/RefreshButton';
 
 export default function BillingPage() {
   const router = useRouter();
@@ -137,19 +139,10 @@ export default function BillingPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-32 lg:pb-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center">
-            <Receipt className="text-teal-600 mr-2 sm:mr-3 w-6 h-6 sm:w-8 sm:h-8" />
-            Create Bill
-          </h1>
-          <p className="text-[11px] sm:text-slate-500 font-medium text-slate-400">Select items for invoice</p>
-        </div>
-        <div className="flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-2xl border border-teal-100">
-          <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-          <span className="text-sm font-bold text-teal-700">Billing Active</span>
-        </div>
-      </div>
+      <PageHeader 
+        title="Create Bill" 
+        refreshAction={() => fetchMenu(true)}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Product Selection (2/3 width on desktop) */}

@@ -224,7 +224,7 @@ function BillDetailsContent() {
               <div className="pt-6 sm:pt-10 space-y-6 sm:space-y-8">
                 <div className="text-center py-8 sm:py-10 bg-teal-50/50 rounded-3xl sm:rounded-3xl border border-dashed border-teal-100 relative overflow-hidden">
                   <p className="text-lg sm:text-2xl font-black text-teal-600 relative z-10 px-4">
-                    Enjoy your fresh homemade treats! 🧁
+                    Enjoy your fresh homemade treats!
                   </p>
                   <p className="text-[8px] sm:text-[10px] font-bold text-teal-400 uppercase tracking-[0.2em] mt-2">Homemade with quality ingredients</p>
                 </div>
