@@ -140,7 +140,7 @@ export default function OrdersPage() {
                               </div>
                             </div>
                             <div className="min-w-0">
-                                <h3 className="font-bold text-slate-800 text-xs truncate uppercase tracking-tight">{bill.customerName}</h3>
+                                <h3 className="font-bold text-slate-800 text-xs uppercase tracking-tight leading-tight">{bill.customerName}</h3>
                                 <p className="text-[9px] text-slate-400 font-bold tracking-widest uppercase mt-0.5">#{bill._id.substring(bill._id.length-6).toUpperCase()}</p>
                             </div>
                             <div className="pt-4 border-t border-slate-50 flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase">

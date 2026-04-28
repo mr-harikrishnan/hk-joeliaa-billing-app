@@ -209,7 +209,7 @@ export default function BillingPage() {
                       <Package className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm leading-tight mb-1 truncate">{item.name}</h4>
+                      <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm leading-tight mb-1">{item.name}</h4>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-1 sm:mt-2">
                         <span className="text-teal-600 font-black text-base sm:text-lg">₹{item.price}</span>
                         {inCart && (
@@ -375,7 +375,7 @@ export default function BillingPage() {
                 <div key={item.id} className="flex flex-col p-4 bg-slate-50/50 rounded-2xl group border border-transparent hover:border-slate-100 transition-all space-y-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-slate-800 text-sm truncate">{item.name}</p>
+                      <p className="font-bold text-slate-800 text-sm">{item.name}</p>
                       <div className="flex items-center mt-1 space-x-1.5">
                         <span className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">₹</span>
                         <div className="flex items-center bg-white border border-slate-200 rounded-lg px-2 group-hover:border-teal-200 transition-colors py-0.5">

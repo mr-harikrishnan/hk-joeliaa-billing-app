@@ -158,7 +158,7 @@ export default function MenuPage() {
               <div className={`flex items-center ${viewMode === 'grid' ? 'space-x-0 flex-col text-center mb-3 sm:mb-6' : 'space-x-4'}`}>
                 <div className={`${viewMode === 'grid' ? 'w-16 h-16 sm:w-24 sm:h-24 mb-3 sm:mb-4' : 'w-12 h-12'} bg-teal-50 rounded-[24px] flex items-center justify-center text-teal-600`}><PackageCheck size={viewMode === 'grid' ? 24 : 18} /></div>
                 <div className="flex-1 w-full min-w-0">
-                  <h3 className="font-bold text-slate-800 text-[11px] sm:text-xs truncate uppercase mb-1 tracking-tight">{item.name}</h3>
+                  <h3 className="font-bold text-slate-800 text-[11px] sm:text-xs uppercase mb-1 tracking-tight leading-tight">{item.name}</h3>
                   <p className="text-teal-600 font-black text-base sm:text-lg">₹{item.price}</p>
                 </div>
               </div>

@@ -192,7 +192,7 @@ function BillDetailsContent() {
                   {bill.items.map((item: any, idx: number) => (
                     <div key={idx} className="grid grid-cols-12 border-b border-slate-100 text-[10px] sm:text-xs font-bold text-slate-800 text-center py-2 sm:py-3">
                       <div className="col-span-1 border-r border-slate-100 text-slate-400 flex items-center justify-center">{idx + 1}</div>
-                      <div className="col-span-6 sm:col-span-7 border-r border-slate-100 px-2 sm:px-4 text-left uppercase truncate">{item.name}</div>
+                      <div className="col-span-6 sm:col-span-7 border-r border-slate-100 px-2 sm:px-4 text-left uppercase break-words leading-tight flex items-center py-1">{item.name}</div>
                       <div className="col-span-1 border-r border-slate-100 flex items-center justify-center">{item.quantity}</div>
                       <div className="col-span-2 sm:col-span-1 border-r border-slate-100 text-slate-500 flex items-center justify-center">{item.price}</div>
                       <div className="col-span-2 font-black flex items-center justify-center">{item.total}</div>

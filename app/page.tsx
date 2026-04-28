@@ -79,7 +79,7 @@ export default function Dashboard() {
                   <h3 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">{card.value}</h3>
                 </div>
                 <div className="mt-3 sm:mt-4 pt-3 border-t border-slate-50 flex items-center justify-between">
-                  <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">{card.sub}</span>
+                  <span className="text-[10px] sm:text-xs font-semibold text-slate-500">{card.sub}</span>
                   <ChevronRight className="text-slate-300 group-hover:text-teal-500 transition-colors" size={14} />
                 </div>
               </div>
