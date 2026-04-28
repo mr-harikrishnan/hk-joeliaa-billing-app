@@ -22,6 +22,8 @@ export default function PageHeader({ title, refreshAction, rightElement }: PageH
               src="/image.png"
               alt="Logo"
               fill
+              priority
+              sizes="32px"
               className="object-contain"
             />
           </div>

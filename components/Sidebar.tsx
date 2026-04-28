@@ -53,6 +53,8 @@ export default function Sidebar() {
             alt="JOELIAA"
             width={80}
             height={80}
+            priority
+            sizes="80px"
             className="object-cover"
           />
         </div>

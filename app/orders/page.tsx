@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { api } from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { toast } from '@/store/useToastStore';
 
 export default function OrdersPage() {
   const [bills, setBills] = useState<any[]>([]);
@@ -45,9 +46,10 @@ export default function OrdersPage() {
       try {
         await api.delete(`/bills/${id}`);
         setBills(prev => prev.filter(b => b._id !== id));
+        toast.success('Bill deleted successfully');
       } catch (err) {
         console.error('Failed to delete bill', err);
-        alert('Failed to delete bill');
+        toast.error('Failed to delete bill');
       }
     }
   };

@@ -26,6 +26,7 @@ import {
 import { generatePDF, exportToImage } from '@/utils/export';
 import { authService } from '@/lib/auth-service';
 import { api } from '@/lib/api';
+import { toast } from '@/store/useToastStore';
 
 function BillDetailsContent() {
   const { id } = useParams();
@@ -105,7 +106,7 @@ function BillDetailsContent() {
         console.error('Error sharing:', err);
       }
     } else {
-      alert('Sharing not supported on this browser');
+      toast.info('Sharing not supported on this browser');
     }
   };
 

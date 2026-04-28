@@ -4,6 +4,7 @@ import "./globals.css";
 import { Suspense } from "react";
 import RootGuard from "@/components/RootGuard";
 import DashboardShell from "@/components/DashboardShell";
+import ToastContainer from "@/components/ui/ToastContainer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <RootGuard>
             <DashboardShell>{children}</DashboardShell>
+            <ToastContainer />
           </RootGuard>
         </Suspense>
       </body>

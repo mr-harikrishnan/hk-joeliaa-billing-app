@@ -25,6 +25,7 @@ import { api } from '@/lib/api';
 import CustomCalendar from '@/components/ui/CustomCalendar';
 import PageHeader from '@/components/ui/PageHeader';
 import RefreshButton from '@/components/ui/RefreshButton';
+import { toast } from '@/store/useToastStore';
 
 export default function BillingPage() {
   const router = useRouter();
@@ -94,12 +95,12 @@ export default function BillingPage() {
 
   const handleGenerateBill = async () => {
     if (cartItems.length === 0) {
-      alert('Please add items to the cart first');
+      toast.error('Please add items to the cart first');
       return;
     }
 
     if (!customerName.trim()) {
-      alert('Please enter customer name to proceed');
+      toast.warning('Please enter customer name to proceed');
       return;
     }
 
@@ -128,11 +129,14 @@ export default function BillingPage() {
       if (res.status === 201 || res.status === 200) {
         const bill = res.data;
         resetCart();
-        router.push(`/bill/${bill._id}`);
+        toast.success('Invoice generated successfully!');
+        setTimeout(() => {
+          router.push(`/bill/${res.data._id}`);
+        }, 1000);
       }
     } catch (err) {
       console.error('Failed to generate bill', err);
-      alert('Failed to generate bill');
+      toast.error('Failed to generate bill. Please try again.');
       setIsGenerating(false);
     }
   };

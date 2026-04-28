@@ -70,6 +70,8 @@ export default function RootGuard({ children }: { children: React.ReactNode }) {
             alt="JOELIAA"
             width={64}
             height={64}
+            priority
+            sizes="64px"
             className="object-cover"
           />
         </div>

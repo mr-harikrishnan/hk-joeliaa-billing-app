@@ -16,6 +16,7 @@ import { useMenuStore } from '@/store/useMenuStore';
 import { api } from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { toast } from '@/store/useToastStore';
 
 export default function MenuPage() {
   const { items, categories, fetchMenu, loading } = useMenuStore();
@@ -74,8 +75,10 @@ export default function MenuPage() {
       await (api as any)[method]('/menu', { ...(editingItem && { _id: editingItem._id }), name: formData.name, price: Number(formData.price), category: categoryId });
       setIsSheetOpen(false);
       await fetchMenu(true);
+      toast.success(editingItem ? 'Item updated successfully' : 'Item created successfully');
     } catch (err) {
       console.error('Failed to save menu item', err);
+      toast.error('Failed to save menu item');
     } finally {
       setIsSaving(false);
     }
@@ -86,8 +89,10 @@ export default function MenuPage() {
       try {
         await api.delete(`/menu?id=${id}`);
         await fetchMenu(true);
+        toast.success('Item deleted successfully');
       } catch (err) {
         console.error('Failed to delete menu item', err);
+        toast.error('Failed to delete menu item');
       }
     }
   };
